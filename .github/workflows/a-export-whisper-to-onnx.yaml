@@ -1,4 +1,4 @@
-name: export-whisper-to-onnx
+name: export-whisper-to-onnx-a
 
 on:
   workflow_dispatch:
