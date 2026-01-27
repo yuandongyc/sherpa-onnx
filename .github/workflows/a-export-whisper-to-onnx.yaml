@@ -193,3 +193,9 @@ jobs:
             --decoder $src/$model-decoder.int8.onnx \
             --tokens $src/$model-tokens.txt \
             $src/test_wavs/0.wav
+
+      - name: Upload model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sherpa-onnx-whisper-${{ matrix.model }}
+          path: sherpa-onnx-whisper-${{ matrix.model }}.tar.bz2
