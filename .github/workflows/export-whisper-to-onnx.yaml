@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   release-whisper-models:
-    if: github.repository_owner == 'k2-fsa' || github.repository_owner == 'csukuangfj'
+    if: github.repository_owner == 'k2-fsa' || github.repository_owner == 'csukuangfj' || github.repository_owner == 'yuandongyc'
     name: ${{ matrix.model }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -128,47 +128,47 @@ jobs:
 
           ls -lh *.tar.bz2
 
-      - name: Release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          file_glob: true
-          file: ./*.tar*
-          overwrite: true
-          repo_name: k2-fsa/sherpa-onnx
-          repo_token: ${{ secrets.UPLOAD_GH_SHERPA_ONNX_TOKEN }}
-          tag: asr-models
+      # - name: Release
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     file_glob: true
+      #     file: ./*.tar*
+      #     overwrite: true
+      #     repo_name: k2-fsa/sherpa-onnx
+      #     repo_token: ${{ secrets.UPLOAD_GH_SHERPA_ONNX_TOKEN }}
+      #     tag: asr-models
 
-      - name: Publish ${{ matrix.model }} to huggingface
-        shell: bash
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: |
-          src=sherpa-onnx-whisper-${{ matrix.model }}
+      # - name: Publish ${{ matrix.model }} to huggingface
+      #   shell: bash
+      #   env:
+      #     HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      #   run: |
+      #     src=sherpa-onnx-whisper-${{ matrix.model }}
 
-          git config --global user.email "csukuangfj@gmail.com"
-          git config --global user.name "Fangjun Kuang"
+      #     git config --global user.email "csukuangfj@gmail.com"
+      #     git config --global user.name "Fangjun Kuang"
 
-          export GIT_CLONE_PROTECTION_ACTIVE=false
+      #     export GIT_CLONE_PROTECTION_ACTIVE=false
 
-          export GIT_LFS_SKIP_SMUDGE=1
+      #     export GIT_LFS_SKIP_SMUDGE=1
 
-          git clone https://csukuangfj:$HF_TOKEN@huggingface.co/csukuangfj/sherpa-onnx-whisper-${{ matrix.model }} huggingface
+      #     git clone https://csukuangfj:$HF_TOKEN@huggingface.co/csukuangfj/sherpa-onnx-whisper-${{ matrix.model }} huggingface
 
-          rm -rf huggingface/*
+      #     rm -rf huggingface/*
 
-          cp -av $src/* ./huggingface/
+      #     cp -av $src/* ./huggingface/
 
-          cd huggingface
+      #     cd huggingface
 
-          git status
-          ls -lh
-          git lfs track "*.wav*"
-          git lfs track "*onnx*"
-          git lfs track "*weights*"
+      #     git status
+      #     ls -lh
+      #     git lfs track "*.wav*"
+      #     git lfs track "*onnx*"
+      #     git lfs track "*weights*"
 
-          git add .
-          git commit -m "upload ${{ matrix.model }}"
-          git push https://csukuangfj:$HF_TOKEN@huggingface.co/csukuangfj/sherpa-onnx-whisper-${{ matrix.model }} main
+      #     git add .
+      #     git commit -m "upload ${{ matrix.model }}"
+      #     git push https://csukuangfj:$HF_TOKEN@huggingface.co/csukuangfj/sherpa-onnx-whisper-${{ matrix.model }} main
 
       - name: Test float32 ${{ matrix.model }}
         shell: bash
