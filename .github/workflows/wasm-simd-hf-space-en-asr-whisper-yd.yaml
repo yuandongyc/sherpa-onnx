@@ -52,13 +52,17 @@ jobs:
           ls -lh
           echo "----------"
 
-          wget -q https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.23/sherpa-onnx-wasm-simd-1.12.23-vad-asr-en-whisper_tiny.tar.bz2
-          tar xvf sherpa-onnx-wasm-simd-1.12.23-vad-asr-en-whisper_tiny.tar.bz2
-          rm sherpa-onnx-wasm-simd-1.12.23-vad-asr-en-whisper_tiny.tar.bz2
+          # 下载 Whisper Tiny 模型文件
+          wget -q https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-whisper-tiny-en.tar.bz2
+          tar xvf sherpa-onnx-streaming-whisper-tiny-en.tar.bz2
+          rm sherpa-onnx-streaming-whisper-tiny-en.tar.bz2
           
-          # 复制模型文件到当前目录
-          cp -r sherpa-onnx-wasm-simd-1.12.23-vad-asr-en-whisper_tiny/* .
-          rm -rf sherpa-onnx-wasm-simd-1.12.23-vad-asr-en-whisper_tiny
+          # 复制并命名模型文件
+          mv sherpa-onnx-streaming-whisper-tiny-en/encoder.onnx encoder.onnx
+          mv sherpa-onnx-streaming-whisper-tiny-en/decoder.onnx decoder.onnx
+          mv sherpa-onnx-streaming-whisper-tiny-en/tokens.txt ./
+          
+          rm -rf sherpa-onnx-streaming-whisper-tiny-en
 
           ls -lh
 
