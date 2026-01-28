@@ -45,7 +45,7 @@ jobs:
           echo "--------------------"
           emcc --check
 
-      - name: Download model files
+      - name: Check model files (Manual Build Mode)
         shell: bash
         run: |
           cd wasm/asr/assets
@@ -54,36 +54,28 @@ jobs:
 
           # 检查模型文件是否存在
           if [ ! -f "encoder.onnx" ] || [ ! -f "decoder.onnx" ] || [ ! -f "tokens.txt" ]; then
-            echo "Downloading Whisper Tiny model files..."
-            
-            # 下载 Whisper Tiny 模型文件
-            wget -q https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.23/sherpa-onnx-wasm-simd-1.12.23-vad-asr-en-whisper_tiny.tar.bz2
-            
-            # 检查下载是否成功
-            if [ -f "sherpa-onnx-streaming-whisper-tiny-en.tar.bz2" ]; then
-              echo "Download successful. Extracting..."
-              tar xvf sherpa-onnx-streaming-whisper-tiny-en.tar.bz2
-              rm sherpa-onnx-streaming-whisper-tiny-en.tar.bz2
-              
-              # 检查解压后的目录
-              if [ -d "sherpa-onnx-streaming-whisper-tiny-en" ]; then
-                echo "Extraction successful. Copying files..."
-                # 复制并命名模型文件
-                mv sherpa-onnx-streaming-whisper-tiny-en/encoder.onnx encoder.onnx
-                mv sherpa-onnx-streaming-whisper-tiny-en/decoder.onnx decoder.onnx
-                mv sherpa-onnx-streaming-whisper-tiny-en/tokens.txt ./
-                
-                rm -rf sherpa-onnx-streaming-whisper-tiny-en
-              else
-                echo "Error: Extraction failed. Directory not found."
-                exit 1
-              fi
-            else
-              echo "Error: Download failed. File not found."
-              exit 1
-            fi
+            echo "ERROR: Model files not found!"
+            echo "This workflow is configured for manual build mode."
+            echo "Please prepare the following files in wasm/asr/assets directory:"
+            echo "1. encoder.onnx"
+            echo "2. decoder.onnx"
+            echo "3. tokens.txt"
+            echo ""
+            echo "You can download the Whisper Tiny model from:"
+            echo "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-whisper-tiny-en.tar.bz2"
+            echo ""
+            echo "After downloading, extract and copy the files to wasm/asr/assets/"
+            echo ""
+            echo "Steps to manually prepare model files:"
+            echo "1. Download the model archive"
+            echo "2. Extract it: tar xvf sherpa-onnx-streaming-whisper-tiny-en.tar.bz2"
+            echo "3. Copy files: mv sherpa-onnx-streaming-whisper-tiny-en/* wasm/asr/assets/"
+            echo "4. Commit and push the changes"
+            echo "5. Rerun this workflow"
+            exit 1
           else
-            echo "Model files already exist. Skipping download."
+            echo "SUCCESS: Model files found!"
+            echo "Proceeding with build..."
           fi
 
           # 显示最终文件列表
