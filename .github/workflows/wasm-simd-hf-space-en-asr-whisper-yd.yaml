@@ -57,7 +57,7 @@ jobs:
             echo "Downloading Whisper Tiny model files..."
             
             # 下载 Whisper Tiny 模型文件
-            wget -q https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-whisper-tiny-en.tar.bz2
+            wget -q https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.23/sherpa-onnx-wasm-simd-1.12.23-vad-asr-en-whisper_tiny.tar.bz2
             
             # 检查下载是否成功
             if [ -f "sherpa-onnx-streaming-whisper-tiny-en.tar.bz2" ]; then
