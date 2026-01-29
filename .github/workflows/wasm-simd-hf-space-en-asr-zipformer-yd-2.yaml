@@ -62,6 +62,7 @@ jobs:
               # 复制并命名模型文件
               mv sherpa-onnx-streaming-zipformer-en-20M-2023-02-17/encoder-epoch-99-avg-1.int8.onnx encoder.onnx
               mv sherpa-onnx-streaming-zipformer-en-20M-2023-02-17/decoder-epoch-99-avg-1.int8.onnx decoder.onnx
+              mv sherpa-onnx-streaming-zipformer-en-20M-2023-02-17/joiner-epoch-99-avg-1.onnx joiner.onnx
               mv sherpa-onnx-streaming-zipformer-en-20M-2023-02-17/tokens.txt tokens.txt
               
               rm -rf sherpa-onnx-streaming-zipformer-en-20M-2023-02-17
