@@ -48,23 +48,23 @@ jobs:
 
           # 下载 Whisper Tiny 模型文件
           echo "Downloading Whisper Tiny model files..."
-          wget -q https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-whisper-tiny-en.tar.bz2
+          wget -q https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-tiny.en.tar.bz2
           
           # 检查下载是否成功
-          if [ -f "sherpa-onnx-streaming-whisper-tiny-en.tar.bz2" ]; then
+          if [ -f "sherpa-onnx-whisper-tiny.en.tar.bz2" ]; then
             echo "Download successful. Extracting..."
-            tar xvf sherpa-onnx-streaming-whisper-tiny-en.tar.bz2
-            rm sherpa-onnx-streaming-whisper-tiny-en.tar.bz2
+            tar xvf sherpa-onnx-whisper-tiny.en.tar.bz2
+            rm sherpa-onnx-whisper-tiny.en.tar.bz2
             
             # 检查解压后的目录
-            if [ -d "sherpa-onnx-streaming-whisper-tiny-en" ]; then
+            if [ -d "sherpa-onnx-whisper-tiny.en" ]; then
               echo "Extraction successful. Copying files..."
               # 复制并命名模型文件
-              mv sherpa-onnx-streaming-whisper-tiny-en/encoder.onnx encoder.onnx
-              mv sherpa-onnx-streaming-whisper-tiny-en/decoder.onnx decoder.onnx
-              mv sherpa-onnx-streaming-whisper-tiny-en/tokens.txt ./
+              mv sherpa-onnx-whisper-tiny.en/encoder.onnx encoder.onnx
+              mv sherpa-onnx-whisper-tiny.en/decoder.onnx decoder.onnx
+              mv sherpa-onnx-whisper-tiny.en/tokens.txt ./
               
-              rm -rf sherpa-onnx-streaming-whisper-tiny-en
+              rm -rf sherpa-onnx-whisper-tiny.en
             else
               echo "Error: Extraction failed. Directory not found."
               exit 1
