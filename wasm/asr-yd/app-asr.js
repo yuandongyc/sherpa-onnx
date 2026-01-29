@@ -105,173 +105,198 @@ let recordingLength = 0;  // number of samples so far
 let recognizer = null;
 let recognizer_stream = null;
 
-if (navigator.mediaDevices.getUserMedia) {
-  console.log('getUserMedia supported.');
+// 延迟初始化麦克风，直到用户点击开始按钮
+let microphoneInitialized = false;
 
-  // see https://w3c.github.io/mediacapture-main/#dom-mediadevices-getusermedia
-  const constraints = {audio: true};
+function initMicrophone() {
+  if (navigator.mediaDevices.getUserMedia) {
+    console.log('getUserMedia supported.');
 
-  let onSuccess = function(stream) {
-    if (!audioCtx) {
-      audioCtx = new AudioContext({sampleRate: 16000});
-    }
-    console.log(audioCtx);
-    recordSampleRate = audioCtx.sampleRate;
-    console.log('sample rate ' + recordSampleRate);
+    // see https://w3c.github.io/mediacapture-main/#dom-mediadevices-getusermedia
+    const constraints = {audio: true};
 
-    // creates an audio node from the microphone incoming stream
-    mediaStream = audioCtx.createMediaStreamSource(stream);
-    console.log('media stream', mediaStream);
-
-    // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createScriptProcessor
-    // bufferSize: the onaudioprocess event is called when the buffer is full
-    var bufferSize = 4096;
-    var numberOfInputChannels = 1;
-    var numberOfOutputChannels = 2;
-    if (audioCtx.createScriptProcessor) {
-      recorder = audioCtx.createScriptProcessor(
-          bufferSize, numberOfInputChannels, numberOfOutputChannels);
-    } else {
-      recorder = audioCtx.createJavaScriptNode(
-          bufferSize, numberOfInputChannels, numberOfOutputChannels);
-    }
-    console.log('recorder', recorder);
-
-    recorder.onaudioprocess = function(e) {
-      let samples = new Float32Array(e.inputBuffer.getChannelData(0))
-      samples = downsampleBuffer(samples, expectedSampleRate);
-
-      if (recognizer_stream == null) {
-        recognizer_stream = recognizer.createStream();
+    let onSuccess = function(stream) {
+      if (!audioCtx) {
+        audioCtx = new AudioContext({sampleRate: 16000});
       }
+      console.log(audioCtx);
+      recordSampleRate = audioCtx.sampleRate;
+      console.log('sample rate ' + recordSampleRate);
 
-      recognizer_stream.acceptWaveform(expectedSampleRate, samples);
-      while (recognizer.isReady(recognizer_stream)) {
-        recognizer.decode(recognizer_stream);
+      // creates an audio node from the microphone incoming stream
+      mediaStream = audioCtx.createMediaStreamSource(stream);
+      console.log('media stream', mediaStream);
+
+      // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createScriptProcessor
+      // bufferSize: the onaudioprocess event is called when the buffer is full
+      var bufferSize = 4096;
+      var numberOfInputChannels = 1;
+      var numberOfOutputChannels = 2;
+      if (audioCtx.createScriptProcessor) {
+        recorder = audioCtx.createScriptProcessor(
+            bufferSize, numberOfInputChannels, numberOfOutputChannels);
+      } else {
+        recorder = audioCtx.createJavaScriptNode(
+            bufferSize, numberOfInputChannels, numberOfOutputChannels);
       }
+      console.log('recorder', recorder);
 
-      let isEndpoint = recognizer.isEndpoint(recognizer_stream);
+      recorder.onaudioprocess = function(e) {
+        let samples = new Float32Array(e.inputBuffer.getChannelData(0))
+        samples = downsampleBuffer(samples, expectedSampleRate);
 
-      let result = recognizer.getResult(recognizer_stream).text;
+        if (recognizer_stream == null) {
+          recognizer_stream = recognizer.createStream();
+        }
 
-      if (recognizer.config.modelConfig.paraformer.encoder != '') {
-        let tailPaddings = new Float32Array(expectedSampleRate);
-        recognizer_stream.acceptWaveform(expectedSampleRate, tailPaddings);
+        recognizer_stream.acceptWaveform(expectedSampleRate, samples);
         while (recognizer.isReady(recognizer_stream)) {
           recognizer.decode(recognizer_stream);
         }
-        result = recognizer.getResult(recognizer_stream).text;
-      }
 
-      if (result.length > 0 && lastResult != result) {
-        lastResult = result;
-      }
+        let isEndpoint = recognizer.isEndpoint(recognizer_stream);
 
-      if (isEndpoint) {
-        if (lastResult.length > 0) {
-          resultList.push(lastResult);
-          lastResult = '';
+        let result = recognizer.getResult(recognizer_stream).text;
+
+        if (recognizer.config.modelConfig.paraformer.encoder != '') {
+          let tailPaddings = new Float32Array(expectedSampleRate);
+          recognizer_stream.acceptWaveform(expectedSampleRate, tailPaddings);
+          while (recognizer.isReady(recognizer_stream)) {
+            recognizer.decode(recognizer_stream);
+          }
+          result = recognizer.getResult(recognizer_stream).text;
         }
-        recognizer.reset(recognizer_stream);
-      }
 
-      textArea.value = getDisplayResult();
-      textArea.scrollTop = textArea.scrollHeight;  // auto scroll
+        if (result.length > 0 && lastResult != result) {
+          lastResult = result;
+        }
 
-      let buf = new Int16Array(samples.length);
-      for (var i = 0; i < samples.length; ++i) {
-        let s = samples[i];
-        if (s >= 1)
-          s = 1;
-        else if (s <= -1)
-          s = -1;
+        if (isEndpoint) {
+          if (lastResult.length > 0) {
+            resultList.push(lastResult);
+            lastResult = '';
+          }
+          recognizer.reset(recognizer_stream);
+        }
 
-        samples[i] = s;
-        buf[i] = s * 32767;
-      }
+        textArea.value = getDisplayResult();
+        textArea.scrollTop = textArea.scrollHeight;  // auto scroll
 
-      leftchannel.push(buf);
-      recordingLength += bufferSize;
+        let buf = new Int16Array(samples.length);
+        for (var i = 0; i < samples.length; ++i) {
+          let s = samples[i];
+          if (s >= 1)
+            s = 1;
+          else if (s <= -1)
+            s = -1;
+
+          samples[i] = s;
+          buf[i] = s * 32767;
+        }
+
+        leftchannel.push(buf);
+        recordingLength += bufferSize;
+      };
+
+      startBtn.onclick = function() {
+        mediaStream.connect(recorder);
+        recorder.connect(audioCtx.destination);
+
+        console.log('recorder started');
+
+        stopBtn.disabled = false;
+        startBtn.disabled = true;
+      };
+
+      stopBtn.onclick = function() {
+        console.log('recorder stopped');
+
+        // stopBtn recording
+        recorder.disconnect(audioCtx.destination);
+        mediaStream.disconnect(recorder);
+
+        startBtn.style.background = '';
+        startBtn.style.color = '';
+        // mediaRecorder.requestData();
+
+        stopBtn.disabled = true;
+        startBtn.disabled = false;
+
+        var clipName = new Date().toISOString();
+
+        const clipContainer = document.createElement('article');
+        const clipLabel = document.createElement('p');
+        const audio = document.createElement('audio');
+        const deleteButton = document.createElement('button');
+        clipContainer.classList.add('clip');
+        audio.setAttribute('controls', '');
+        deleteButton.textContent = 'Delete';
+        deleteButton.className = 'delete';
+
+        clipLabel.textContent = clipName;
+
+        clipContainer.appendChild(audio);
+
+        clipContainer.appendChild(clipLabel);
+        clipContainer.appendChild(deleteButton);
+        soundClips.appendChild(clipContainer);
+
+        audio.controls = true;
+        let samples = flatten(leftchannel);
+        const blob = toWav(samples);
+
+        leftchannel = [];
+        const audioURL = window.URL.createObjectURL(blob);
+        audio.src = audioURL;
+        console.log('recorder stopped');
+
+        deleteButton.onclick = function(e) {
+          let evtTgt = e.target;
+          evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
+        };
+
+        clipLabel.onclick = function() {
+          const existingName = clipLabel.textContent;
+          const newClipName = prompt('Enter a new name for your sound clip?');
+          if (newClipName === null) {
+            clipLabel.textContent = existingName;
+          } else {
+            clipLabel.textContent = newClipName;
+          }
+        };
+      };
+
+      microphoneInitialized = true;
+      console.log('Microphone initialized successfully');
     };
 
-    startBtn.onclick = function() {
-      mediaStream.connect(recorder);
-      recorder.connect(audioCtx.destination);
-
-      console.log('recorder started');
-
-      stopBtn.disabled = false;
+    let onError = function(err) {
+      console.log('The following error occured: ' + err);
+      alert('无法访问麦克风设备: ' + err.message + '\n\n您仍然可以使用音频文件上传功能进行语音识别。');
       startBtn.disabled = true;
-    };
-
-    stopBtn.onclick = function() {
-      console.log('recorder stopped');
-
-      // stopBtn recording
-      recorder.disconnect(audioCtx.destination);
-      mediaStream.disconnect(recorder);
-
-      startBtn.style.background = '';
-      startBtn.style.color = '';
-      // mediaRecorder.requestData();
-
       stopBtn.disabled = true;
-      startBtn.disabled = false;
-
-      var clipName = new Date().toISOString();
-
-      const clipContainer = document.createElement('article');
-      const clipLabel = document.createElement('p');
-      const audio = document.createElement('audio');
-      const deleteButton = document.createElement('button');
-      clipContainer.classList.add('clip');
-      audio.setAttribute('controls', '');
-      deleteButton.textContent = 'Delete';
-      deleteButton.className = 'delete';
-
-      clipLabel.textContent = clipName;
-
-      clipContainer.appendChild(audio);
-
-      clipContainer.appendChild(clipLabel);
-      clipContainer.appendChild(deleteButton);
-      soundClips.appendChild(clipContainer);
-
-      audio.controls = true;
-      let samples = flatten(leftchannel);
-      const blob = toWav(samples);
-
-      leftchannel = [];
-      const audioURL = window.URL.createObjectURL(blob);
-      audio.src = audioURL;
-      console.log('recorder stopped');
-
-      deleteButton.onclick = function(e) {
-        let evtTgt = e.target;
-        evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
-      };
-
-      clipLabel.onclick = function() {
-        const existingName = clipLabel.textContent;
-        const newClipName = prompt('Enter a new name for your sound clip?');
-        if (newClipName === null) {
-          clipLabel.textContent = existingName;
-        } else {
-          clipLabel.textContent = newClipName;
-        }
-      };
+      // 即使麦克风初始化失败，也要启用文件上传功能
+      transcribeBtn.disabled = false;
     };
-  };
 
-  let onError = function(err) {
-    console.log('The following error occured: ' + err);
-  };
-
-  navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
-} else {
-  console.log('getUserMedia not supported on your browser!');
-  alert('getUserMedia not supported on your browser!');
+    navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
+  } else {
+    console.log('getUserMedia not supported on your browser!');
+    alert('getUserMedia not supported on your browser!\n\n您仍然可以使用音频文件上传功能进行语音识别。');
+    startBtn.disabled = true;
+    stopBtn.disabled = true;
+    // 即使浏览器不支持 getUserMedia，也要启用文件上传功能
+    transcribeBtn.disabled = false;
+  }
 }
+
+// 修改 startBtn 点击事件，先初始化麦克风
+startBtn.onclick = function() {
+  if (!microphoneInitialized) {
+    console.log('Initializing microphone...');
+    initMicrophone();
+  }
+};
 
 // this function is copied/modified from
 // https://gist.github.com/meziantou/edb7217fddfbb70e899e
