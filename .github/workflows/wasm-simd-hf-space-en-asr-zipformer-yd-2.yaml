@@ -78,10 +78,10 @@ jobs:
           echo "Final files in assets directory:"
           ls -lh
 
-      - name: Build sherpa-onnx for WebAssembly (ASR)
+      - name: Build sherpa-onnx for WebAssembly (ASR-YD)
         shell: bash
         run: |
-          ./build-wasm-simd-asr.sh
+          ./build-wasm-simd-asr-yd.sh
 
       - name: collect files
         shell: bash
@@ -89,7 +89,7 @@ jobs:
           SHERPA_ONNX_VERSION=v$(grep "SHERPA_ONNX_VERSION" ./CMakeLists.txt  | cut -d " " -f 2  | cut -d '"' -f 2)
 
           dst=sherpa-onnx-wasm-simd-${SHERPA_ONNX_VERSION}-en-asr-yd
-          mv build-wasm-simd-asr/install/bin/wasm/asr-yd $dst
+          mv build-wasm-simd-asr-yd/install/bin/wasm/asr-yd $dst
           ls -lh $dst
           tar cjfv ${dst}.tar.bz2 ./${dst}
 
