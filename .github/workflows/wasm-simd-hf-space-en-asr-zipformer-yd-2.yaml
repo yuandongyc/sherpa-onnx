@@ -81,6 +81,7 @@ jobs:
       - name: Build sherpa-onnx for WebAssembly (ASR-YD)
         shell: bash
         run: |
+          chmod +x ./build-wasm-simd-asr-yd.sh
           ./build-wasm-simd-asr-yd.sh
 
       - name: collect files
