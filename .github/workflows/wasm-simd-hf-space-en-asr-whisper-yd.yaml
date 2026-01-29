@@ -60,9 +60,9 @@ jobs:
             if [ -d "sherpa-onnx-whisper-tiny.en" ]; then
               echo "Extraction successful. Copying files..."
               # 复制并命名模型文件
-              mv sherpa-onnx-whisper-tiny.en/encoder.onnx encoder.onnx
-              mv sherpa-onnx-whisper-tiny.en/decoder.onnx decoder.onnx
-              mv sherpa-onnx-whisper-tiny.en/tokens.txt ./
+              mv sherpa-onnx-whisper-tiny.en/tiny.en-encoder.onnx encoder.onnx
+              mv sherpa-onnx-whisper-tiny.en/tiny.en-decoder.onnx decoder.onnx
+              mv sherpa-onnx-whisper-tiny.en/tiny.en-tokens.txt tokens.txt
               
               rm -rf sherpa-onnx-whisper-tiny.en
             else
