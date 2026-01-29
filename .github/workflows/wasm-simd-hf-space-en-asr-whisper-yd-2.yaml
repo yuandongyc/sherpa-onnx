@@ -1,0 +1,183 @@
+name: wasm-simd-hf-space-en-asr-yd
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: wasm-simd-hf-space-en-asr-yd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  wasm-simd-hf-space-en-asr-yd:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update version
+        shell: bash
+        run: |
+          ./new-release.sh
+          git diff .
+
+      - name: Install emsdk
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.53
+          actions-cache-folder: 'emsdk-cache'
+
+      - name: View emsdk version
+        shell: bash
+        run: |
+          emcc -v
+          echo "--------------------"
+          emcc --check
+
+      - name: Download model files
+        shell: bash
+        run: |
+          cd wasm/asr-yd/assets
+          ls -lh
+          echo "----------"
+
+          # 下载小模型文件
+          echo "Downloading streaming zipformer en 20M model files..."
+          wget -q https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-en-20M-2023-02-17.tar.bz2
+          
+          # 检查下载是否成功
+          if [ -f "sherpa-onnx-streaming-zipformer-en-20M-2023-02-17.tar.bz2" ]; then
+            echo "Download successful. Extracting..."
+            tar xvf sherpa-onnx-streaming-zipformer-en-20M-2023-02-17.tar.bz2
+            rm sherpa-onnx-streaming-zipformer-en-20M-2023-02-17.tar.bz2
+            
+            # 检查解压后的目录
+            if [ -d "sherpa-onnx-streaming-zipformer-en-20M-2023-02-17" ]; then
+              echo "Extraction successful. Copying files..."
+              # 复制并命名模型文件
+              mv sherpa-onnx-streaming-zipformer-en-20M-2023-02-17/encoder.onnx encoder.onnx
+              mv sherpa-onnx-streaming-zipformer-en-20M-2023-02-17/decoder.onnx decoder.onnx
+              mv sherpa-onnx-streaming-zipformer-en-20M-2023-02-17/tokens.txt tokens.txt
+              
+              rm -rf sherpa-onnx-streaming-zipformer-en-20M-2023-02-17
+            else
+              echo "Error: Extraction failed. Directory not found."
+              exit 1
+            fi
+          else
+            echo "Error: Download failed. File not found."
+            exit 1
+          fi
+
+          # 显示最终文件列表
+          echo "Final files in assets directory:"
+          ls -lh
+
+      - name: Build sherpa-onnx for WebAssembly (ASR)
+        shell: bash
+        run: |
+          ./build-wasm-simd-asr.sh
+
+      - name: collect files
+        shell: bash
+        run: |
+          SHERPA_ONNX_VERSION=v$(grep "SHERPA_ONNX_VERSION" ./CMakeLists.txt  | cut -d " " -f 2  | cut -d '"' -f 2)
+
+          dst=sherpa-onnx-wasm-simd-${SHERPA_ONNX_VERSION}-en-asr-yd
+          mv build-wasm-simd-asr/install/bin/wasm/asr-yd $dst
+          ls -lh $dst
+          tar cjfv ${dst}.tar.bz2 ./${dst}
+
+      - name: Upload wasm files
+        uses: actions/upload-artifact@v4
+        with:
+          name: sherpa-onnx-wasm-simd-en-asr-yd
+          path: ./sherpa-onnx-wasm-simd-*.tar.bz2
+
+      - name: Release
+        if: (github.repository_owner == 'csukuangfj' || github.repository_owner == 'k2-fsa') && github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file_glob: true
+          overwrite: true
+          file: ./*.tar.bz2
+
+      - name: Publish to ModelScope
+        if: false
+        env:
+          MS_TOKEN: ${{ secrets.MODEL_SCOPE_GIT_TOKEN }}
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 20
+          timeout_seconds: 200
+          shell: bash
+          command: |
+            SHERPA_ONNX_VERSION=v$(grep "SHERPA_ONNX_VERSION" ./CMakeLists.txt  | cut -d " " -f 2  | cut -d '"' -f 2)
+
+            git config --global user.email "csukuangfj@gmail.com"
+            git config --global user.name "Fangjun Kuang"
+
+            rm -rf ms
+            export GIT_LFS_SKIP_SMUDGE=1
+            export GIT_CLONE_PROTECTION_ACTIVE=false
+
+            git clone https://www.modelscope.cn/studios/k2-fsa/web-assembly-asr-sherpa-onnx-en.git ms
+            cd ms
+            rm -fv *.js
+            rm -fv *.data
+            git fetch
+            git pull
+            git merge -m "merge remote" --ff origin main
+
+            cp -v ../sherpa-onnx-wasm-simd-${SHERPA_ONNX_VERSION}-*/* .
+
+            git status
+            git lfs track "*.data"
+            git lfs track "*.wasm"
+            ls -lh
+
+            git add .
+            git commit -m "update model"
+            git push https://oauth2:${MS_TOKEN}@www.modelscope.cn/studios/k2-fsa/web-assembly-asr-sherpa-onnx-en.git
+
+      - name: Publish to huggingface
+        if: false
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 20
+          timeout_seconds: 200
+          shell: bash
+          command: |
+            SHERPA_ONNX_VERSION=v$(grep "SHERPA_ONNX_VERSION" ./CMakeLists.txt  | cut -d " " -f 2  | cut -d '"' -f 2)
+
+            git config --global user.email "csukuangfj@gmail.com"
+            git config --global user.name "Fangjun Kuang"
+
+            rm -rf huggingface
+            export GIT_LFS_SKIP_SMUDGE=1
+            export GIT_CLONE_PROTECTION_ACTIVE=false
+
+            git clone https://huggingface.co/spaces/k2-fsa/web-assembly-asr-sherpa-onnx-en huggingface
+            cd huggingface
+            rm -rf ./*
+            git fetch
+            git pull
+            git merge -m "merge remote" --ff origin main
+
+            cp -v ../sherpa-onnx-wasm-simd-${SHERPA_ONNX_VERSION}-*/* .
+
+            git status
+            git lfs track "*.data"
+            git lfs track "*.wasm"
+            ls -lh
+
+            git add .
+            git commit -m "update model"
+            git push https://csukuangfj:$HF_TOKEN@huggingface.co/spaces/k2-fsa/web-assembly-asr-sherpa-onnx-en main

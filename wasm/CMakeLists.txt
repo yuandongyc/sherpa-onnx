@@ -4,6 +4,7 @@ endif()
 
 if(SHERPA_ONNX_ENABLE_WASM_ASR)
   add_subdirectory(asr)
+  add_subdirectory(asr-yd)
 endif()
 
 if(SHERPA_ONNX_ENABLE_WASM_KWS)
