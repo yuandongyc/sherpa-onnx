@@ -1,14 +1,14 @@
-name: wasm-simd-hf-space-en-asr-yd
+name: wasm-simd-hf-space-en-asr-zipformer-yd-2
 
 on:
   workflow_dispatch:
 
 concurrency:
-  group: wasm-simd-hf-space-en-asr-yd-${{ github.ref }}
+  group: wasm-simd-hf-space-en-asr-zipformer-yd-2-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  wasm-simd-hf-space-en-asr-yd:
+  wasm-simd-hf-space-en-asr-zipformer-yd:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
