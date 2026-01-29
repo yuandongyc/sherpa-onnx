@@ -77,6 +77,11 @@ jobs:
           # 显示最终文件列表
           echo "Final files in assets directory:"
           ls -lh
+          
+          # 复制模型文件到 wasm/asr/assets/ 目录
+          echo "Copying model files to wasm/asr/assets/ directory..."
+          cp encoder.onnx decoder.onnx tokens.txt ../../asr/assets/
+          ls -lh ../../asr/assets/
 
       - name: Build sherpa-onnx for WebAssembly (ASR-YD)
         shell: bash
