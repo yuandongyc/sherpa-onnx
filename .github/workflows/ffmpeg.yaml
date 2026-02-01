@@ -1,0 +1,106 @@
+name: A FFmpeg Tests
+
+on:
+  push:
+    branches:
+      - master
+      - github-actions
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  ffmpeg-tests:
+    name: FFmpeg ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install FFmpeg on Ubuntu
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install FFmpeg on macOS
+        if: runner.os == 'macOS'
+        run: |
+          brew install ffmpeg
+
+      - name: Build
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            sudo apt-get update
+            sudo apt-get install -y build-essential cmake wget git libportaudio2
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            brew install cmake wget
+          fi
+
+          mkdir build
+          cd build
+          cmake \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DSHERPA_ONNX_ENABLE_PYTHON=OFF \
+            -DSHERPA_ONNX_ENABLE_C_API=ON \
+            -DSHERPA_ONNX_ENABLE_PORTAUDIO=OFF \
+            ..
+          make -j2
+
+          # Build ffmpeg example
+          cd ffmpeg-examples
+          make
+
+      - name: Download test model
+        shell: bash
+        run: |
+          cd ffmpeg-examples
+          curl -SL -O https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20.tar.bz2
+          tar xvf sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20.tar.bz2
+          rm sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20.tar.bz2
+
+      - name: Test with greedy_search
+        shell: bash
+        run: |
+          cd ffmpeg-examples/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
+          ../build/ffmpeg-examples/sherpa-onnx-ffmpeg \
+            ./tokens.txt \
+            ./encoder.onnx ./decoder.onnx ./joiner.onnx \
+            ./test_wavs/0.wav \
+            2 \
+            greedy_search
+
+      - name: Test with modified_beam_search
+        shell: bash
+        run: |
+          cd ffmpeg-examples/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
+          ../build/ffmpeg-examples/sherpa-onnx-ffmpeg \
+            ./tokens.txt \
+            ./encoder.onnx ./decoder.onnx ./joiner.onnx \
+            ./test_wavs/0.wav \
+            2 \
+            modified_beam_search
+
+      - name: Test with URL (network stream)
+        shell: bash
+        run: |
+          cd ffmpeg-examples/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
+          ../build/ffmpeg-examples/sherpa-onnx-ffmpeg \
+            ./tokens.txt \
+            ./encoder.onnx ./decoder.onnx ./joiner.onnx \
+            https://huggingface.co/csukuangfj/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/resolve/main/test_wavs/3.wav \
+            2 \
+            greedy_search
+
+      - name: Cleanup
+        if: always()
+        shell: bash
+        run: |
+          cd ffmpeg-examples
+          rm -rf sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
