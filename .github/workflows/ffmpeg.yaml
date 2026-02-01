@@ -12,53 +12,45 @@ on:
 
 jobs:
   ffmpeg-tests:
-    name: FFmpeg ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+    name: FFmpeg windows-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install FFmpeg on Ubuntu
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
-
-      - name: Install FFmpeg on macOS
-        if: runner.os == 'macOS'
-        run: |
-          brew install ffmpeg
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ffmpeg
+            mingw-w64-x86_64-wget
+            mingw-w64-x86_64-curl
+            make
 
       - name: Build
-        shell: bash
+        shell: msys2 {0}
         run: |
-          if [ "$RUNNER_OS" == "Linux" ]; then
-            sudo apt-get update
-            sudo apt-get install -y build-essential cmake wget git libportaudio2
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            brew install cmake wget
-          fi
-
           mkdir build
           cd build
           cmake \
+            -G "MinGW Makefiles" \
             -DCMAKE_BUILD_TYPE=Release \
             -DSHERPA_ONNX_ENABLE_PYTHON=OFF \
             -DSHERPA_ONNX_ENABLE_C_API=ON \
             -DSHERPA_ONNX_ENABLE_PORTAUDIO=OFF \
             ..
-          make -j2
+          mingw32-make -j2
 
           # Build ffmpeg example
           cd ffmpeg-examples
           make
 
       - name: Download test model
-        shell: bash
+        shell: msys2 {0}
         run: |
           cd ffmpeg-examples
           curl -SL -O https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20.tar.bz2
@@ -66,10 +58,10 @@ jobs:
           rm sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20.tar.bz2
 
       - name: Test with greedy_search
-        shell: bash
+        shell: msys2 {0}
         run: |
           cd ffmpeg-examples/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
-          ../build/ffmpeg-examples/sherpa-onnx-ffmpeg \
+          ../build/ffmpeg-examples/sherpa-onnx-ffmpeg.exe \
             ./tokens.txt \
             ./encoder.onnx ./decoder.onnx ./joiner.onnx \
             ./test_wavs/0.wav \
@@ -77,10 +69,10 @@ jobs:
             greedy_search
 
       - name: Test with modified_beam_search
-        shell: bash
+        shell: msys2 {0}
         run: |
           cd ffmpeg-examples/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
-          ../build/ffmpeg-examples/sherpa-onnx-ffmpeg \
+          ../build/ffmpeg-examples/sherpa-onnx-ffmpeg.exe \
             ./tokens.txt \
             ./encoder.onnx ./decoder.onnx ./joiner.onnx \
             ./test_wavs/0.wav \
@@ -88,10 +80,10 @@ jobs:
             modified_beam_search
 
       - name: Test with URL (network stream)
-        shell: bash
+        shell: msys2 {0}
         run: |
           cd ffmpeg-examples/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
-          ../build/ffmpeg-examples/sherpa-onnx-ffmpeg \
+          ../build/ffmpeg-examples/sherpa-onnx-ffmpeg.exe \
             ./tokens.txt \
             ./encoder.onnx ./decoder.onnx ./joiner.onnx \
             https://huggingface.co/csukuangfj/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/resolve/main/test_wavs/3.wav \
@@ -100,7 +92,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        shell: bash
+        shell: msys2 {0}
         run: |
           cd ffmpeg-examples
           rm -rf sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
