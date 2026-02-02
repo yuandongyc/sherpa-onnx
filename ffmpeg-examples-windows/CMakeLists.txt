@@ -47,15 +47,22 @@ endif()
 
 add_executable(sherpa-onnx-ffmpeg sherpa-onnx-ffmpeg.c)
 
+# 检查源文件编译时的 include 路径
+message(STATUS "Setting include directories for sherpa-onnx-ffmpeg:")
+message(STATUS "  Parent dir: ${CMAKE_CURRENT_SOURCE_DIR}/..")
+
 target_include_directories(sherpa-onnx-ffmpeg PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
 if(PKG_CONFIG_FOUND)
+    message(STATUS "  FFmpeg (pkg-config): ${FFMPEG_INCLUDE_DIRS}")
     target_include_directories(sherpa-onnx-ffmpeg PRIVATE ${FFMPEG_INCLUDE_DIRS})
     target_link_directories(sherpa-onnx-ffmpeg PRIVATE ${FFMPEG_LIBRARY_DIRS})
     target_link_libraries(sherpa-onnx-ffmpeg PRIVATE ${FFMPEG_LIBRARIES})
 else()
+    message(STATUS "  FFmpeg include: ${FFMPEG_INCLUDE_DIR}")
+    message(STATUS "  FFmpeg lib: ${FFMPEG_LIBRARIES}")
     target_include_directories(sherpa-onnx-ffmpeg PRIVATE ${FFMPEG_INCLUDE_DIR})
     target_link_directories(sherpa-onnx-ffmpeg PRIVATE ${FFMPEG_LIBRARIES})
     target_link_libraries(sherpa-onnx-ffmpeg PRIVATE
@@ -67,6 +74,13 @@ else()
         swscale
         avutil
     )
+endif()
+
+# 验证 FFmpeg 头文件是否存在
+if(EXISTS "${FFMPEG_INCLUDE_DIR}/libavcodec/avcodec.h")
+    message(STATUS "  Found: libavcodec/avcodec.h")
+else()
+    message(WARNING "  NOT FOUND: libavcodec/avcodec.h in ${FFMPEG_INCLUDE_DIR}")
 endif()
 
 target_link_libraries(sherpa-onnx-ffmpeg PRIVATE
