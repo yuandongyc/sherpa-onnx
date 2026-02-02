@@ -209,7 +209,7 @@ static int init_filters(const char *filters_descr) {
   av_log(NULL, AV_LOG_INFO, "Output: srate:%dHz fmt:%s chlayout:%s\n",
          (int)outlink->sample_rate,
          (char *)av_x_if_null(
-             av_get_sample_fmt_name((AVSampleFormat)outlink->format), "?"),
+             av_get_sample_fmt_name((enum AVSampleFormat)outlink->format), "?"),
          args);
 
 end:
