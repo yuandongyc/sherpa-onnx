@@ -88,24 +88,11 @@ jobs:
             -D SHERPA_ONNX_ENABLE_BINARY=OFF `
             -D SHERPA_ONNX_BUILD_FFMPEG_EXAMPLES_WINDOWS=ON `
             -D FFMPEG_INCLUDE_DIR="$ffmpegInclude" `
-            -D FFMPEG_LIBRARIES="$ffmpegLib" 2>&1
+            -D FFMPEG_LIBRARIES="$ffmpegLib"
           
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "CMake configuration failed!"
-            exit 1
-          }
-          
-          cmake --build . --config Release --parallel 2
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "Build failed!"
-            exit 1
-          }
+          cmake --build . --config Release --parallel 2 --verbose
           
           cmake --install . --config Release
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "Install failed!"
-            exit 1
-          }
           
           Get-ChildItem install/lib -ErrorAction SilentlyContinue
           Get-ChildItem install/include -ErrorAction SilentlyContinue
