@@ -107,12 +107,14 @@ jobs:
             }
           }
           
-          # 更新环境变量供后续步骤使用
+          # 更新环境变量供后续步骤使用（使用绝对路径）
           if ($includePath) {
-            echo "FFMPEG_INCLUDE_FOUND=$includePath" >> $env:GITHUB_ENV
+            $absIncludePath = (Resolve-Path $includePath).Path
+            echo "FFMPEG_INCLUDE_FOUND=$absIncludePath" >> $env:GITHUB_ENV
           }
           if ($libPath) {
-            echo "FFMPEG_LIB_FOUND=$libPath" >> $env:GITHUB_ENV
+            $absLibPath = (Resolve-Path $libPath).Path
+            echo "FFMPEG_LIB_FOUND=$absLibPath" >> $env:GITHUB_ENV
           }
 
       - name: Build sherpa-onnx
