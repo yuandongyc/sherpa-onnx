@@ -107,11 +107,23 @@ jobs:
             exit 1
           }
           
-          Write-Host "CMake configuration complete. Building all targets..."
-          & cmake --build . --config Release --parallel 2
-          
+          Write-Host "CMake configuration complete. Building sherpa-onnx-c-api first..."
+          & cmake --build . --config Release --target sherpa-onnx-c-api --parallel 2
           if ($LASTEXITCODE -ne 0) {
-            Write-Error "Build failed with exit code $LASTEXITCODE"
+            Write-Error "Failed to build sherpa-onnx-c-api"
+            exit 1
+          }
+          
+          Write-Host "Building sherpa-onnx-ffmpeg target..."
+          & cmake --build . --config Release --target sherpa-onnx-ffmpeg --parallel 2 2>&1 | Tee-Object -FilePath ffmpeg-build.log
+          $ffmpegExitCode = $LASTEXITCODE
+          
+          if ($ffmpegExitCode -ne 0) {
+            Write-Error "Failed to build sherpa-onnx-ffmpeg with exit code $ffmpegExitCode"
+            Write-Host "=== Full build log ==="
+            Get-Content ffmpeg-build.log -ErrorAction SilentlyContinue
+            Write-Host "=== Error summary ==="
+            Select-String -Path ffmpeg-build.log -Pattern "error|fatal|cannot find|cannot open|LINK" -ErrorAction SilentlyContinue | Select-Object -Last 30 | ForEach-Object { Write-Host $_.Line }
             exit 1
           }
           
