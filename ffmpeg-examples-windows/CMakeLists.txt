@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.13)
-project(sherpa-onnx-ffmpeg-windows C CXX)
+# ffmpeg-examples-windows - 作为 sherpa-onnx 的子模块构建
+# 注意：不要在这里使用 project() 命令，因为它需要访问父项目的目标
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(${PROJECT_SOURCE_DIR}/..)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 find_package(PkgConfig QUIET)
 
@@ -65,6 +65,7 @@ if(WIN32)
     target_link_libraries(sherpa-onnx-ffmpeg PRIVATE ws2_32)
 endif()
 
+# 设置输出目录 - 使用 CMAKE_RUNTIME_OUTPUT_DIRECTORY 确保与主项目一致
 set_target_properties(sherpa-onnx-ffmpeg PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
 )
