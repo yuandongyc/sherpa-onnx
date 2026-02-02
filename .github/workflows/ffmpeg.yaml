@@ -37,8 +37,9 @@ jobs:
           cd build
           cmake \
             -D CMAKE_BUILD_TYPE=Release \
+            -D CMAKE_OSX_ARCHITECTURES=arm64 \
             -D SHERPA_ONNX_ENABLE_PORTAUDIO=OFF \
-            -D BUILD_SHARED_LIBS=OFF \
+            -D BUILD_SHARED_LIBS=ON \
             -DCMAKE_INSTALL_PREFIX=./install \
             ..
 
@@ -53,6 +54,8 @@ jobs:
         shell: bash
         run: |
           cd ffmpeg-examples
+          # Add macOS system frameworks needed by FFmpeg
+          export LDFLAGS="-framework CoreFoundation -framework CoreMedia -framework CoreVideo -framework VideoToolbox -framework AudioToolbox -framework Security"
           make
 
       - name: Download test model
