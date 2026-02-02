@@ -49,6 +49,7 @@ extern "C" {
 #include <libavformat/avformat.h>
 #include <libavutil/channel_layout.h>
 #include <libavutil/opt.h>
+#include <libavutil/samplefmt.h>
 
 #ifdef __cplusplus
 }
