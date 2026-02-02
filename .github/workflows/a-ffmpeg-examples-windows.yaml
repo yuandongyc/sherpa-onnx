@@ -183,7 +183,14 @@ jobs:
             Write-Error "Failed to build sherpa-onnx-c-api"
             exit 1
           }
-          
+
+          Write-Host "Building sherpa-onnx-cxx-api..."
+          & cmake --build . --config Release --target sherpa-onnx-cxx-api --parallel 2
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to build sherpa-onnx-cxx-api"
+            exit 1
+          }
+
           Write-Host "Building sherpa-onnx-ffmpeg target with verbose output..."
           & cmake --build . --config Release --target sherpa-onnx-ffmpeg --parallel 2 --verbose 2>&1 | Tee-Object -FilePath ffmpeg-build.log
           $ffmpegExitCode = $LASTEXITCODE
