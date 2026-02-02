@@ -82,26 +82,15 @@ jobs:
           cmake --build . --config Release --parallel 2
           cmake --install . --config Release
           
-          ls -lh install/lib
-          ls -lh install/include
+          Get-ChildItem install/lib
+          Get-ChildItem install/include
 
-      - name: Build ffmpeg-examples-windows
+      - name: Check ffmpeg-examples-windows build
         shell: pwsh
         run: |
-          cd ffmpeg-examples-windows
-          
-          mkdir build
-          cd build
-          
-          cmake .. `
-            -G "Visual Studio 17 2022" `
-            -A x64 `
-            -DFFMPEG_INCLUDE_DIR="$env:GITHUB_WORKSPACE\ffmpeg\include" `
-            -DFFMPEG_LIBRARIES="$env:GITHUB_WORKSPACE\ffmpeg\lib"
-          
-          cmake --build . --config Release
-          
-          ls -lh bin/Release
+          # ffmpeg-examples-windows 已经作为主项目的子目录被构建
+          # 检查构建输出
+          Get-ChildItem build/bin/Release
 
       - name: Download test model
         shell: pwsh
@@ -121,7 +110,7 @@ jobs:
         run: |
           $env:PATH = "$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
           
-          .\ffmpeg-examples-windows\build\bin\Release\sherpa-onnx-ffmpeg.exe `
+          .\build\bin\Release\sherpa-onnx-ffmpeg.exe `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\tokens.txt `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\encoder-epoch-99-avg-1.onnx `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\decoder-epoch-99-avg-1.onnx `
@@ -135,7 +124,7 @@ jobs:
         run: |
           $env:PATH = "$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
           
-          .\ffmpeg-examples-windows\build\bin\Release\sherpa-onnx-ffmpeg.exe `
+          .\build\bin\Release\sherpa-onnx-ffmpeg.exe `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\tokens.txt `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\encoder-epoch-99-avg-1.onnx `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\decoder-epoch-99-avg-1.onnx `
@@ -149,7 +138,7 @@ jobs:
         run: |
           $env:PATH = "$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
           
-          .\ffmpeg-examples-windows\build\bin\Release\sherpa-onnx-ffmpeg.exe `
+          .\build\bin\Release\sherpa-onnx-ffmpeg.exe `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\tokens.txt `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\encoder-epoch-99-avg-1.onnx `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\decoder-epoch-99-avg-1.onnx `
@@ -161,7 +150,7 @@ jobs:
         with:
           name: sherpa-onnx-ffmpeg-windows
           path: |
-            ffmpeg-examples-windows/build/bin/Release/sherpa-onnx-ffmpeg.exe
+            build/bin/Release/sherpa-onnx-ffmpeg.exe
             ffmpeg-examples-windows/README.md
             ffmpeg-examples-windows/run.ps1
           retention-days: 90
