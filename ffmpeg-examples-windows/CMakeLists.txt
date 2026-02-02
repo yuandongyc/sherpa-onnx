@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
 
+message(STATUS "Configuring ffmpeg-examples-windows")
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "FFMPEG_INCLUDE_DIR at start: ${FFMPEG_INCLUDE_DIR}")
+message(STATUS "FFMPEG_LIBRARIES at start: ${FFMPEG_LIBRARIES}")
+
 find_package(PkgConfig QUIET)
 
 if(PKG_CONFIG_FOUND)
@@ -33,6 +38,14 @@ else()
     
     message(STATUS "FFMPEG_INCLUDE_DIR: ${FFMPEG_INCLUDE_DIR}")
     message(STATUS "FFMPEG_LIBRARIES: ${FFMPEG_LIBRARIES}")
+    
+    # 验证 FFmpeg 路径是否存在
+    if(NOT EXISTS ${FFMPEG_INCLUDE_DIR})
+        message(FATAL_ERROR "FFmpeg include directory not found: ${FFMPEG_INCLUDE_DIR}")
+    endif()
+    if(NOT EXISTS ${FFMPEG_LIBRARIES})
+        message(FATAL_ERROR "FFmpeg lib directory not found: ${FFMPEG_LIBRARIES}")
+    endif()
     
     include_directories(${FFMPEG_INCLUDE_DIR})
     link_directories(${FFMPEG_LIBRARIES})
