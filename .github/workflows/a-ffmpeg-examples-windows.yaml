@@ -89,7 +89,8 @@ jobs:
             exit 1
           }
           
-          cmake .. `
+          Write-Host "Running CMake configuration..."
+          & cmake .. `
             -G "Visual Studio 17 2022" `
             -A x64 `
             -D CMAKE_BUILD_TYPE=Release `
@@ -99,29 +100,39 @@ jobs:
             -D SHERPA_ONNX_ENABLE_C_API=ON `
             -D SHERPA_ONNX_BUILD_FFMPEG_EXAMPLES_WINDOWS=ON `
             -D FFMPEG_INCLUDE_DIR="$ffmpegInclude" `
-            -D FFMPEG_LIBRARIES="$ffmpegLib" | Tee-Object -FilePath cmake-config.log
+            -D FFMPEG_LIBRARIES="$ffmpegLib"
           
-          Write-Host "CMake configuration complete."
-          Write-Host "Checking CMake output for ffmpeg and C API..."
-          Select-String -Path cmake-config.log -Pattern "ffmpeg|FFMPEG|SHERPA_ONNX_ENABLE_C_API|SHERPA_ONNX_BUILD_FFMPEG" | ForEach-Object { Write-Host $_.Line }
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "CMake configuration failed with exit code $LASTEXITCODE"
+            exit 1
+          }
           
-          Write-Host "Listing all CMake targets..."
-          cmake --build . --config Release --target help 2>&1 | Select-String -Pattern "sherpa" | ForEach-Object { Write-Host $_.Line }
+          Write-Host "CMake configuration complete. Building all targets..."
+          & cmake --build . --config Release --parallel 2
           
-          Write-Host "Building all targets..."
-          cmake --build . --config Release --parallel 2
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Build failed with exit code $LASTEXITCODE"
+            exit 1
+          }
           
-          Write-Host "Checking build output..."
-          Write-Host "Contents of bin directory:"
-          Get-ChildItem bin -Recurse -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
+          Write-Host "Build complete. Checking output files..."
+          Write-Host "All .exe files in build directory:"
+          Get-ChildItem ..\build -Recurse -Filter "*.exe" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
           
-          Write-Host "Contents of bin/Release directory:"
-          Get-ChildItem bin/Release -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
+          if (-not (Test-Path "..\build\bin\Release\sherpa-onnx-ffmpeg.exe")) {
+            Write-Error "sherpa-onnx-ffmpeg.exe not found at expected location: build\bin\Release\sherpa-onnx-ffmpeg.exe"
+            Write-Host "Contents of build\bin:"
+            Get-ChildItem ..\build\bin -Recurse -ErrorAction SilentlyContinue
+            exit 1
+          }
           
-          cmake --install . --config Release
+          Write-Host "Installing..."
+          & cmake --install . --config Release
           
-          Get-ChildItem install/lib -ErrorAction SilentlyContinue
-          Get-ChildItem install/include -ErrorAction SilentlyContinue
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Install failed with exit code $LASTEXITCODE"
+            exit 1
+          }
 
       - name: Download test model
         shell: pwsh
@@ -140,15 +151,14 @@ jobs:
         shell: pwsh
         run: |
           Write-Host "Searching for sherpa-onnx-ffmpeg.exe..."
-          $exe = Get-ChildItem -Path build -Name "sherpa-onnx-ffmpeg.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
-          if ($exe) {
-            $fullPath = Join-Path "build" $exe
-            Write-Host "Found: $fullPath"
-            $env:FFMPEG_EXE = $fullPath
-            echo "FFMPEG_EXE=$fullPath" >> $env:GITHUB_ENV
+          $exePath = "build\bin\Release\sherpa-onnx-ffmpeg.exe"
+          if (Test-Path $exePath) {
+            Write-Host "Found: $exePath"
+            echo "FFMPEG_EXE=$exePath" >> $env:GITHUB_ENV
           } else {
-            Write-Host "sherpa-onnx-ffmpeg.exe not found!"
-            Get-ChildItem build -Recurse | Where-Object { $_.Name -like "*.exe" }
+            Write-Host "sherpa-onnx-ffmpeg.exe not found at $exePath"
+            Write-Host "Searching entire build directory..."
+            Get-ChildItem build -Recurse -Filter "*.exe" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
             exit 1
           }
 
