@@ -26,8 +26,9 @@ install(
   TARGETS
     sherpa-onnx-c-api
     sherpa-onnx-cxx-api
-  DESTINATION
-    lib
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
 
 install(
