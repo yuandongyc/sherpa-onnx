@@ -88,12 +88,17 @@ jobs:
             -D SHERPA_ONNX_ENABLE_BINARY=OFF `
             -D SHERPA_ONNX_BUILD_FFMPEG_EXAMPLES_WINDOWS=ON `
             -D FFMPEG_INCLUDE_DIR="$ffmpegInclude" `
-            -D FFMPEG_LIBRARIES="$ffmpegLib"
+            -D FFMPEG_LIBRARIES="$ffmpegLib" 2>&1 | Tee-Object -FilePath cmake.log
           
-          Write-Host "CMake configuration complete. Checking available targets..."
-          cmake --build . --config Release --target help | Select-String -Pattern "sherpa-onnx-ffmpeg" | Select-Object -First 5
+          Write-Host "CMake configuration complete."
+          Write-Host "Checking CMake output for FFmpeg..."
+          Select-String -Path cmake.log -Pattern "FFMPEG|ffmpeg" | Select-Object -Last 20
           
-          cmake --build . --config Release --parallel 2
+          Write-Host "Checking available targets..."
+          cmake --build . --config Release --target help 2>&1 | Select-String -Pattern "sherpa-onnx-ffmpeg" | Select-Object -First 5
+          
+          Write-Host "Building sherpa-onnx-ffmpeg target specifically..."
+          cmake --build . --config Release --target sherpa-onnx-ffmpeg 2>&1
           
           Write-Host "Checking build output..."
           Get-ChildItem bin -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "*.exe" }
