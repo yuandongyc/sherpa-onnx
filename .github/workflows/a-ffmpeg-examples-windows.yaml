@@ -94,14 +94,12 @@ jobs:
           Write-Host "Checking CMake output for FFmpeg..."
           Select-String -Path cmake.log -Pattern "FFMPEG|ffmpeg" | Select-Object -Last 20
           
-          Write-Host "Checking available targets..."
-          cmake --build . --config Release --target help 2>&1 | Select-String -Pattern "sherpa-onnx-ffmpeg" | Select-Object -First 5
-          
-          Write-Host "Building sherpa-onnx-ffmpeg target specifically..."
-          cmake --build . --config Release --target sherpa-onnx-ffmpeg 2>&1
+          Write-Host "Building all targets..."
+          cmake --build . --config Release --parallel 2
           
           Write-Host "Checking build output..."
           Get-ChildItem bin -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "*.exe" }
+          Get-ChildItem bin/Release -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "*.dll" }
           
           cmake --install . --config Release
           
