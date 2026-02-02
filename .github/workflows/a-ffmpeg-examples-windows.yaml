@@ -88,11 +88,9 @@ jobs:
             -D SHERPA_ONNX_ENABLE_BINARY=OFF `
             -D SHERPA_ONNX_BUILD_FFMPEG_EXAMPLES_WINDOWS=ON `
             -D FFMPEG_INCLUDE_DIR="$ffmpegInclude" `
-            -D FFMPEG_LIBRARIES="$ffmpegLib" 2>&1 | Tee-Object -FilePath cmake.log
+            -D FFMPEG_LIBRARIES="$ffmpegLib"
           
-          Write-Host "CMake configuration complete."
-          Write-Host "Checking CMake output for FFmpeg..."
-          Select-String -Path cmake.log -Pattern "FFMPEG|ffmpeg" | Select-Object -Last 20
+          Write-Host "CMake configuration complete. Checking targets..."
           
           Write-Host "Building all targets..."
           cmake --build . --config Release --parallel 2
