@@ -33,13 +33,22 @@ jobs:
           ./new-release.sh
           git diff .
 
+      - name: Clear FFmpeg cache if needed
+        shell: pwsh
+        run: |
+          # 强制删除旧的 ffmpeg 目录以确保使用新的 URL
+          if (Test-Path "ffmpeg") {
+            Write-Host "Removing old ffmpeg directory..."
+            Remove-Item -Recurse -Force "ffmpeg"
+          }
+
       - name: Cache FFmpeg
         uses: actions/cache@v4
         with:
           path: ffmpeg
-          key: ffmpeg-dev-windows-v2-${{ hashFiles('.github/workflows/a-ffmpeg-examples-windows.yaml') }}
+          key: ffmpeg-dev-windows-v3-${{ hashFiles('.github/workflows/a-ffmpeg-examples-windows.yaml') }}
           restore-keys: |
-            ffmpeg-dev-windows-v2-
+            ffmpeg-dev-windows-v3-
 
       - name: Download FFmpeg dev
         shell: pwsh
@@ -60,19 +69,51 @@ jobs:
             Write-Host "FFmpeg cache hit"
           }
           Write-Host "FFmpeg directory structure:"
-          Get-ChildItem ffmpeg | ForEach-Object { Write-Host $_.Name }
+          Get-ChildItem ffmpeg | ForEach-Object { Write-Host "  $($_.Name)" }
           
-          Write-Host "FFmpeg include directory contents:"
-          if (Test-Path "ffmpeg/include") {
-            Get-ChildItem ffmpeg/include -Recurse | ForEach-Object { Write-Host $_.FullName }
+          # BtbN 的 FFmpeg 包可能有不同的结构，查找正确的 include 路径
+          $includePath = $null
+          if (Test-Path "ffmpeg/include/libavcodec/avcodec.h") {
+            $includePath = "ffmpeg/include"
+            Write-Host "Found include at: ffmpeg/include"
           } else {
-            Write-Host "ffmpeg/include not found!"
-            Write-Host "Looking for include directory..."
-            Get-ChildItem ffmpeg -Recurse -Filter "avcodec.h" | ForEach-Object { Write-Host "Found: $($_.FullName)" }
+            # 递归查找
+            $found = Get-ChildItem ffmpeg -Recurse -Filter "avcodec.h" -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($found) {
+              $includePath = $found.DirectoryName
+              Write-Host "Found avcodec.h at: $($found.FullName)"
+              Write-Host "Include path should be: $includePath"
+            } else {
+              Write-Host "ERROR: avcodec.h not found anywhere in ffmpeg directory!"
+              Write-Host "Full directory listing:"
+              Get-ChildItem ffmpeg -Recurse | ForEach-Object { Write-Host $_.FullName }
+              exit 1
+            }
           }
           
-          Write-Host "FFmpeg lib directory:"
-          Get-ChildItem ffmpeg/lib -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.Name }
+          # 查找 lib 目录
+          $libPath = $null
+          if (Test-Path "ffmpeg/lib/avcodec.lib") {
+            $libPath = "ffmpeg/lib"
+            Write-Host "Found lib at: ffmpeg/lib"
+          } else {
+            $foundLib = Get-ChildItem ffmpeg -Recurse -Filter "avcodec.lib" -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($foundLib) {
+              $libPath = $foundLib.DirectoryName
+              Write-Host "Found avcodec.lib at: $($foundLib.FullName)"
+              Write-Host "Lib path should be: $libPath"
+            } else {
+              Write-Host "WARNING: avcodec.lib not found!"
+            }
+          }
+          
+          # 更新环境变量供后续步骤使用
+          if ($includePath) {
+            echo "FFMPEG_INCLUDE_FOUND=$includePath" >> $env:GITHUB_ENV
+          }
+          if ($libPath) {
+            echo "FFMPEG_LIB_FOUND=$libPath" >> $env:GITHUB_ENV
+          }
 
       - name: Build sherpa-onnx
         shell: pwsh
@@ -82,10 +123,22 @@ jobs:
           mkdir build
           cd build
           
-          $ffmpegInclude = "$env:GITHUB_WORKSPACE\ffmpeg\include"
-          $ffmpegLib = "$env:GITHUB_WORKSPACE\ffmpeg\lib"
-          Write-Host "FFMPEG_INCLUDE_DIR: $ffmpegInclude"
-          Write-Host "FFMPEG_LIBRARIES: $ffmpegLib"
+          # 使用之前找到的路径，或者使用默认路径
+          if ($env:FFMPEG_INCLUDE_FOUND) {
+            $ffmpegInclude = $env:FFMPEG_INCLUDE_FOUND
+            Write-Host "Using found FFMPEG_INCLUDE_DIR: $ffmpegInclude"
+          } else {
+            $ffmpegInclude = "$env:GITHUB_WORKSPACE\ffmpeg\include"
+            Write-Host "Using default FFMPEG_INCLUDE_DIR: $ffmpegInclude"
+          }
+          
+          if ($env:FFMPEG_LIB_FOUND) {
+            $ffmpegLib = $env:FFMPEG_LIB_FOUND
+            Write-Host "Using found FFMPEG_LIBRARIES: $ffmpegLib"
+          } else {
+            $ffmpegLib = "$env:GITHUB_WORKSPACE\ffmpeg\lib"
+            Write-Host "Using default FFMPEG_LIBRARIES: $ffmpegLib"
+          }
           
           # 验证 FFmpeg 路径是否存在
           if (-not (Test-Path $ffmpegInclude)) {
@@ -98,6 +151,13 @@ jobs:
           }
           
           Write-Host "Running CMake configuration..."
+          Write-Host "FFMPEG_INCLUDE_DIR = $ffmpegInclude"
+          Write-Host "FFMPEG_LIBRARIES = $ffmpegLib"
+          
+          # 检查目录内容
+          Write-Host "Contents of FFMPEG_INCLUDE_DIR:"
+          Get-ChildItem "$ffmpegInclude" -ErrorAction SilentlyContinue | Select-Object -First 10
+          
           & cmake .. `
             -G "Visual Studio 17 2022" `
             -A x64 `
@@ -107,8 +167,8 @@ jobs:
             -D SHERPA_ONNX_ENABLE_BINARY=OFF `
             -D SHERPA_ONNX_ENABLE_C_API=ON `
             -D SHERPA_ONNX_BUILD_FFMPEG_EXAMPLES_WINDOWS=ON `
-            -D FFMPEG_INCLUDE_DIR="$ffmpegInclude" `
-            -D FFMPEG_LIBRARIES="$ffmpegLib"
+            -D "FFMPEG_INCLUDE_DIR=$ffmpegInclude" `
+            -D "FFMPEG_LIBRARIES=$ffmpegLib"
           
           if ($LASTEXITCODE -ne 0) {
             Write-Error "CMake configuration failed with exit code $LASTEXITCODE"
