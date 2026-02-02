@@ -117,12 +117,28 @@ jobs:
           
           Get-ChildItem sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
 
+      - name: Find sherpa-onnx-ffmpeg executable
+        shell: pwsh
+        run: |
+          Write-Host "Searching for sherpa-onnx-ffmpeg.exe..."
+          $exe = Get-ChildItem -Path build -Name "sherpa-onnx-ffmpeg.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($exe) {
+            $fullPath = Join-Path "build" $exe
+            Write-Host "Found: $fullPath"
+            $env:FFMPEG_EXE = $fullPath
+            echo "FFMPEG_EXE=$fullPath" >> $env:GITHUB_ENV
+          } else {
+            Write-Host "sherpa-onnx-ffmpeg.exe not found!"
+            Get-ChildItem build -Recurse | Where-Object { $_.Name -like "*.exe" }
+            exit 1
+          }
+
       - name: Test sherpa-onnx-ffmpeg (greedy_search)
         shell: pwsh
         run: |
           $env:PATH = "$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
           
-          .\build\bin\Release\sherpa-onnx-ffmpeg.exe `
+          & $env:FFMPEG_EXE `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\tokens.txt `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\encoder-epoch-99-avg-1.onnx `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\decoder-epoch-99-avg-1.onnx `
@@ -136,7 +152,7 @@ jobs:
         run: |
           $env:PATH = "$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
           
-          .\build\bin\Release\sherpa-onnx-ffmpeg.exe `
+          & $env:FFMPEG_EXE `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\tokens.txt `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\encoder-epoch-99-avg-1.onnx `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\decoder-epoch-99-avg-1.onnx `
@@ -150,7 +166,7 @@ jobs:
         run: |
           $env:PATH = "$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
           
-          .\build\bin\Release\sherpa-onnx-ffmpeg.exe `
+          & $env:FFMPEG_EXE `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\tokens.txt `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\encoder-epoch-99-avg-1.onnx `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\decoder-epoch-99-avg-1.onnx `
@@ -162,7 +178,7 @@ jobs:
         with:
           name: sherpa-onnx-ffmpeg-windows
           path: |
-            build/bin/Release/sherpa-onnx-ffmpeg.exe
+            ${{ env.FFMPEG_EXE }}
             ffmpeg-examples-windows/README.md
             ffmpeg-examples-windows/run.ps1
           retention-days: 90
