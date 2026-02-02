@@ -69,32 +69,38 @@ jobs:
       - name: Test with greedy_search
         shell: bash
         run: |
-          cd ffmpeg-examples/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
-          ../sherpa-onnx-ffmpeg \
-            ./tokens.txt \
-            ./encoder.onnx ./decoder.onnx ./joiner.onnx \
-            ./test_wavs/0.wav \
+          cd ffmpeg-examples
+          ./sherpa-onnx-ffmpeg \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/tokens.txt \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/encoder.onnx \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/decoder.onnx \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/joiner.onnx \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/test_wavs/0.wav \
             2 \
             greedy_search
 
       - name: Test with modified_beam_search
         shell: bash
         run: |
-          cd ffmpeg-examples/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
-          ../sherpa-onnx-ffmpeg \
-            ./tokens.txt \
-            ./encoder.onnx ./decoder.onnx ./joiner.onnx \
-            ./test_wavs/0.wav \
+          cd ffmpeg-examples
+          ./sherpa-onnx-ffmpeg \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/tokens.txt \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/encoder.onnx \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/decoder.onnx \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/joiner.onnx \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/test_wavs/0.wav \
             2 \
             modified_beam_search
 
       - name: Test with URL (network stream)
         shell: bash
         run: |
-          cd ffmpeg-examples/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
-          ../sherpa-onnx-ffmpeg \
-            ./tokens.txt \
-            ./encoder.onnx ./decoder.onnx ./joiner.onnx \
+          cd ffmpeg-examples
+          ./sherpa-onnx-ffmpeg \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/tokens.txt \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/encoder.onnx \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/decoder.onnx \
+            ./sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/joiner.onnx \
             https://huggingface.co/csukuangfj/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/resolve/main/test_wavs/3.wav \
             2 \
             greedy_search
