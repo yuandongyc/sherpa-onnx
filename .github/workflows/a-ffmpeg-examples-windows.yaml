@@ -46,14 +46,14 @@ jobs:
         run: |
           if (-not (Test-Path "ffmpeg")) {
             Write-Host "Downloading FFmpeg dev package..."
-            $url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-dev.zip"
+            # 使用 BtbN 的自动构建版本
+            $url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl-shared.zip"
             Invoke-WebRequest -Uri $url -OutFile "ffmpeg.zip"
-            Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg" -Force
+            Expand-Archive -Path "ffmpeg.zip" -DestinationPath "." -Force
             Remove-Item "ffmpeg.zip"
             
-            $ffmpegPath = Get-ChildItem "ffmpeg" -Directory | Select-Object -First 1
-            Move-Item -Path "$($ffmpegPath.FullName)/*" -Destination "ffmpeg" -Force
-            Remove-Item -Path "$($ffmpegPath.FullName)"
+            # 重命名解压后的目录为 ffmpeg
+            Rename-Item -Path "ffmpeg-master-latest-win64-gpl-shared" -NewName "ffmpeg" -Force
             
             Write-Host "FFmpeg downloaded and extracted successfully"
             Get-ChildItem ffmpeg
