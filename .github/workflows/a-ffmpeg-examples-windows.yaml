@@ -56,11 +56,15 @@ jobs:
             Rename-Item -Path "ffmpeg-master-latest-win64-gpl-shared" -NewName "ffmpeg" -Force
             
             Write-Host "FFmpeg downloaded and extracted successfully"
-            Get-ChildItem ffmpeg
           } else {
             Write-Host "FFmpeg cache hit"
-            Get-ChildItem ffmpeg
           }
+          Write-Host "FFmpeg directory structure:"
+          Get-ChildItem ffmpeg -Recurse | Select-Object -First 30
+          Write-Host "FFmpeg include directory:"
+          Get-ChildItem ffmpeg/include -ErrorAction SilentlyContinue
+          Write-Host "FFmpeg lib directory:"
+          Get-ChildItem ffmpeg/lib -ErrorAction SilentlyContinue
 
       - name: Build sherpa-onnx
         shell: pwsh
@@ -70,6 +74,11 @@ jobs:
           mkdir build
           cd build
           
+          $ffmpegInclude = "$env:GITHUB_WORKSPACE\ffmpeg\include"
+          $ffmpegLib = "$env:GITHUB_WORKSPACE\ffmpeg\lib"
+          Write-Host "FFMPEG_INCLUDE_DIR: $ffmpegInclude"
+          Write-Host "FFMPEG_LIBRARIES: $ffmpegLib"
+          
           cmake .. `
             -G "Visual Studio 17 2022" `
             -A x64 `
@@ -78,14 +87,28 @@ jobs:
             -D CMAKE_INSTALL_PREFIX=./install `
             -D SHERPA_ONNX_ENABLE_BINARY=OFF `
             -D SHERPA_ONNX_BUILD_FFMPEG_EXAMPLES_WINDOWS=ON `
-            -DFFMPEG_INCLUDE_DIR="$env:GITHUB_WORKSPACE\ffmpeg\include" `
-            -DFFMPEG_LIBRARIES="$env:GITHUB_WORKSPACE\ffmpeg\lib"
+            -D FFMPEG_INCLUDE_DIR="$ffmpegInclude" `
+            -D FFMPEG_LIBRARIES="$ffmpegLib" 2>&1
+          
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "CMake configuration failed!"
+            exit 1
+          }
           
           cmake --build . --config Release --parallel 2
-          cmake --install . --config Release
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Build failed!"
+            exit 1
+          }
           
-          Get-ChildItem install/lib
-          Get-ChildItem install/include
+          cmake --install . --config Release
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Install failed!"
+            exit 1
+          }
+          
+          Get-ChildItem install/lib -ErrorAction SilentlyContinue
+          Get-ChildItem install/include -ErrorAction SilentlyContinue
 
       - name: Check ffmpeg-examples-windows build
         shell: pwsh
