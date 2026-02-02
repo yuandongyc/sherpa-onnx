@@ -37,9 +37,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ffmpeg
-          key: ffmpeg-dev-windows-${{ hashFiles('.github/workflows/a-ffmpeg-examples-windows.yaml') }}
+          key: ffmpeg-dev-windows-v2-${{ hashFiles('.github/workflows/a-ffmpeg-examples-windows.yaml') }}
           restore-keys: |
-            ffmpeg-dev-windows-
+            ffmpeg-dev-windows-v2-
 
       - name: Download FFmpeg dev
         shell: pwsh
@@ -79,6 +79,16 @@ jobs:
           Write-Host "FFMPEG_INCLUDE_DIR: $ffmpegInclude"
           Write-Host "FFMPEG_LIBRARIES: $ffmpegLib"
           
+          # 验证 FFmpeg 路径是否存在
+          if (-not (Test-Path $ffmpegInclude)) {
+            Write-Error "FFmpeg include directory not found: $ffmpegInclude"
+            exit 1
+          }
+          if (-not (Test-Path $ffmpegLib)) {
+            Write-Error "FFmpeg lib directory not found: $ffmpegLib"
+            exit 1
+          }
+          
           cmake .. `
             -G "Visual Studio 17 2022" `
             -A x64 `
@@ -86,18 +96,27 @@ jobs:
             -D BUILD_SHARED_LIBS=ON `
             -D CMAKE_INSTALL_PREFIX=./install `
             -D SHERPA_ONNX_ENABLE_BINARY=OFF `
+            -D SHERPA_ONNX_ENABLE_C_API=ON `
             -D SHERPA_ONNX_BUILD_FFMPEG_EXAMPLES_WINDOWS=ON `
             -D FFMPEG_INCLUDE_DIR="$ffmpegInclude" `
-            -D FFMPEG_LIBRARIES="$ffmpegLib"
+            -D FFMPEG_LIBRARIES="$ffmpegLib" | Tee-Object -FilePath cmake-config.log
           
-          Write-Host "CMake configuration complete. Checking targets..."
+          Write-Host "CMake configuration complete."
+          Write-Host "Checking CMake output for ffmpeg and C API..."
+          Select-String -Path cmake-config.log -Pattern "ffmpeg|FFMPEG|SHERPA_ONNX_ENABLE_C_API|SHERPA_ONNX_BUILD_FFMPEG" | ForEach-Object { Write-Host $_.Line }
+          
+          Write-Host "Listing all CMake targets..."
+          cmake --build . --config Release --target help 2>&1 | Select-String -Pattern "sherpa" | ForEach-Object { Write-Host $_.Line }
           
           Write-Host "Building all targets..."
           cmake --build . --config Release --parallel 2
           
           Write-Host "Checking build output..."
-          Get-ChildItem bin -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "*.exe" }
-          Get-ChildItem bin/Release -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "*.dll" }
+          Write-Host "Contents of bin directory:"
+          Get-ChildItem bin -Recurse -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
+          
+          Write-Host "Contents of bin/Release directory:"
+          Get-ChildItem bin/Release -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
           
           cmake --install . --config Release
           
