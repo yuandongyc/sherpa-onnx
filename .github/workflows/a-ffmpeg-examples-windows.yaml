@@ -1,0 +1,173 @@
+name: a-ffmpeg-examples-windows
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/a-ffmpeg-examples-windows.yaml'
+      - 'cmake/**'
+      - 'sherpa-onnx/csrc/*'
+      - 'sherpa-onnx/c-api/*'
+      - 'ffmpeg-examples-windows/**'
+
+  workflow_dispatch:
+
+concurrency:
+  group: a-ffmpeg-examples-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_windows:
+    name: Windows
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update version
+        shell: bash
+        run: |
+          ./new-release.sh
+          git diff .
+
+      - name: Cache FFmpeg
+        uses: actions/cache@v4
+        with:
+          path: ffmpeg
+          key: ffmpeg-dev-windows-${{ hashFiles('.github/workflows/a-ffmpeg-examples-windows.yaml') }}
+          restore-keys: |
+            ffmpeg-dev-windows-
+
+      - name: Download FFmpeg dev
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "ffmpeg")) {
+            Write-Host "Downloading FFmpeg dev package..."
+            $url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-dev.zip"
+            Invoke-WebRequest -Uri $url -OutFile "ffmpeg.zip"
+            Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg" -Force
+            Remove-Item "ffmpeg.zip"
+            
+            $ffmpegPath = Get-ChildItem "ffmpeg" -Directory | Select-Object -First 1
+            Move-Item -Path "$($ffmpegPath.FullName)/*" -Destination "ffmpeg" -Force
+            Remove-Item -Path "$($ffmpegPath.FullName)"
+            
+            Write-Host "FFmpeg downloaded and extracted successfully"
+            Get-ChildItem ffmpeg
+          } else {
+            Write-Host "FFmpeg cache hit"
+            Get-ChildItem ffmpeg
+          }
+
+      - name: Build sherpa-onnx
+        shell: pwsh
+        run: |
+          cmake --version
+          
+          mkdir build
+          cd build
+          
+          cmake .. `
+            -G "Visual Studio 17 2022" `
+            -A x64 `
+            -D CMAKE_BUILD_TYPE=Release `
+            -D BUILD_SHARED_LIBS=ON `
+            -D CMAKE_INSTALL_PREFIX=./install `
+            -D SHERPA_ONNX_ENABLE_BINARY=OFF `
+            -D SHERPA_ONNX_BUILD_FFMPEG_EXAMPLES_WINDOWS=ON
+          
+          cmake --build . --config Release --parallel 2
+          cmake --install . --config Release
+          
+          ls -lh install/lib
+          ls -lh install/include
+
+      - name: Build ffmpeg-examples-windows
+        shell: pwsh
+        run: |
+          cd ffmpeg-examples-windows
+          
+          mkdir build
+          cd build
+          
+          cmake .. `
+            -G "Visual Studio 17 2022" `
+            -A x64 `
+            -DFFMPEG_INCLUDE_DIR="$env:GITHUB_WORKSPACE\ffmpeg\include" `
+            -DFFMPEG_LIBRARIES="$env:GITHUB_WORKSPACE\ffmpeg\lib"
+          
+          cmake --build . --config Release
+          
+          ls -lh bin/Release
+
+      - name: Download test model
+        shell: pwsh
+        run: |
+          Write-Host "Downloading test model..."
+          $url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20.tar.bz2"
+          Invoke-WebRequest -Uri $url -OutFile "model.tar.bz2"
+          
+          Write-Host "Extracting model..."
+          tar -xf model.tar.bz2
+          Remove-Item "model.tar.bz2"
+          
+          Get-ChildItem sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
+
+      - name: Test sherpa-onnx-ffmpeg (greedy_search)
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
+          
+          .\ffmpeg-examples-windows\build\bin\Release\sherpa-onnx-ffmpeg.exe `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\tokens.txt `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\encoder-epoch-99-avg-1.onnx `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\decoder-epoch-99-avg-1.onnx `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\joiner-epoch-99-avg-1.onnx `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\test_wavs\0.wav `
+            2 `
+            greedy_search
+
+      - name: Test sherpa-onnx-ffmpeg (modified_beam_search)
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
+          
+          .\ffmpeg-examples-windows\build\bin\Release\sherpa-onnx-ffmpeg.exe `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\tokens.txt `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\encoder-epoch-99-avg-1.onnx `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\decoder-epoch-99-avg-1.onnx `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\joiner-epoch-99-avg-1.onnx `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\test_wavs\0.wav `
+            2 `
+            modified_beam_search
+
+      - name: Test URL decoding
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
+          
+          .\ffmpeg-examples-windows\build\bin\Release\sherpa-onnx-ffmpeg.exe `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\tokens.txt `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\encoder-epoch-99-avg-1.onnx `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\decoder-epoch-99-avg-1.onnx `
+            .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\joiner-epoch-99-avg-1.onnx `
+            https://huggingface.co/csukuangfj/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/resolve/main/test_wavs/3.wav
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sherpa-onnx-ffmpeg-windows
+          path: |
+            ffmpeg-examples-windows/build/bin/Release/sherpa-onnx-ffmpeg.exe
+            ffmpeg-examples-windows/README.md
+            ffmpeg-examples-windows/run.ps1
+          retention-days: 90
+
+      - name: Clean up
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20
+          Remove-Item -Recurse -Force build

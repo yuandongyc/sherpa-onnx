@@ -59,6 +59,7 @@ option(SHERPA_ONNX_LINK_LIBSTDCPP_STATICALLY "True to link libstdc++ statically.
 option(SHERPA_ONNX_USE_PRE_INSTALLED_ONNXRUNTIME_IF_AVAILABLE "True to use pre-installed onnxruntime if available" ON)
 option(SHERPA_ONNX_ENABLE_SANITIZER "Whether to enable ubsan and asan" OFF)
 option(SHERPA_ONNX_BUILD_C_API_EXAMPLES "Whether to enable C API examples" ${SUGGEST_BUILD_BINARIES})
+option(SHERPA_ONNX_BUILD_FFMPEG_EXAMPLES_WINDOWS "Whether to build ffmpeg-examples-windows" OFF)
 option(SHERPA_ONNX_ENABLE_RKNN "Whether to build for RKNN NPU " OFF)
 option(SHERPA_ONNX_ENABLE_AXERA "Whether to build for Axera NPU " OFF)
 option(SHERPA_ONNX_ENABLE_AXCL "Whether to build for Axcl NPU " OFF)
@@ -540,6 +541,10 @@ if(SHERPA_ONNX_ENABLE_C_API AND SHERPA_ONNX_ENABLE_BINARY AND SHERPA_ONNX_BUILD_
   set(SHERPA_ONNX_PKG_WITH_CARGS "-lcargs")
   add_subdirectory(c-api-examples)
   add_subdirectory(cxx-api-examples)
+endif()
+
+if(WIN32 AND SHERPA_ONNX_BUILD_FFMPEG_EXAMPLES_WINDOWS)
+  add_subdirectory(ffmpeg-examples-windows)
 endif()
 
 if(SHERPA_ONNX_ENABLE_WASM)
