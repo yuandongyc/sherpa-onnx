@@ -254,8 +254,27 @@ jobs:
       - name: Test sherpa-onnx-ffmpeg (greedy_search)
         shell: pwsh
         run: |
-          $env:PATH = "$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
-          
+          Write-Host "FFMPEG_EXE env var: $env:FFMPEG_EXE"
+          Write-Host "GITHUB_WORKSPACE: $env:GITHUB_WORKSPACE"
+
+          # Check if exe exists
+          if (-not (Test-Path $env:FFMPEG_EXE)) {
+            Write-Error "Executable not found at: $env:FFMPEG_EXE"
+            exit 1
+          }
+
+          # Add FFmpeg DLLs to PATH (needed for shared FFmpeg build)
+          $env:PATH = "$env:GITHUB_WORKSPACE\ffmpeg\bin;$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
+          Write-Host "PATH: $env:PATH"
+
+          # List DLLs in install bin
+          Write-Host "DLLs in install bin:"
+          Get-ChildItem "$env:GITHUB_WORKSPACE\build\install\bin\*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
+
+          # List FFmpeg DLLs
+          Write-Host "FFmpeg DLLs:"
+          Get-ChildItem "$env:GITHUB_WORKSPACE\ffmpeg\bin\*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
+
           & $env:FFMPEG_EXE `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\tokens.txt `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\encoder-epoch-99-avg-1.onnx `
@@ -268,8 +287,9 @@ jobs:
       - name: Test sherpa-onnx-ffmpeg (modified_beam_search)
         shell: pwsh
         run: |
-          $env:PATH = "$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
-          
+          # Add FFmpeg DLLs to PATH (needed for shared FFmpeg build)
+          $env:PATH = "$env:GITHUB_WORKSPACE\ffmpeg\bin;$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
+
           & $env:FFMPEG_EXE `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\tokens.txt `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\encoder-epoch-99-avg-1.onnx `
@@ -282,8 +302,9 @@ jobs:
       - name: Test URL decoding
         shell: pwsh
         run: |
-          $env:PATH = "$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
-          
+          # Add FFmpeg DLLs to PATH (needed for shared FFmpeg build)
+          $env:PATH = "$env:GITHUB_WORKSPACE\ffmpeg\bin;$env:GITHUB_WORKSPACE\build\install\bin;$env:PATH"
+
           & $env:FFMPEG_EXE `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\tokens.txt `
             .\sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20\encoder-epoch-99-avg-1.onnx `
