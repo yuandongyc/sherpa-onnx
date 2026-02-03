@@ -144,7 +144,7 @@ static int init_filters(const char *filters_descr) {
   /* Note: For FFmpeg 7.0+, options must be passed during filter creation. */
   char sink_args[256];
   snprintf(sink_args, sizeof(sink_args),
-           "sample_formats=s16:sample_rates=16000:channel_layouts=mono");
+           "sample_rate=16000:sample_fmt=s16:channel_layout=mono");
   ret = avfilter_graph_create_filter(&buffersink_ctx, abuffersink, "out", sink_args,
                                      NULL, filter_graph);
   if (ret < 0) {
