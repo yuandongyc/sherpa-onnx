@@ -141,11 +141,9 @@ static int init_filters(const char *filters_descr) {
   }
 
   /* buffer audio sink: to terminate the filter chain. */
-  /* Note: For FFmpeg 7.0+, options must be passed during filter creation. */
-  char sink_args[256];
-  snprintf(sink_args, sizeof(sink_args),
-           "sample_rate=16000:sample_fmt=s16:channel_layout=mono");
-  ret = avfilter_graph_create_filter(&buffersink_ctx, abuffersink, "out", sink_args,
+  /* Note: FFmpeg 7.0+ doesn't allow setting these options via av_opt_set.
+   * The output format is already configured by the aformat filter in filter_descr. */
+  ret = avfilter_graph_create_filter(&buffersink_ctx, abuffersink, "out", NULL,
                                      NULL, filter_graph);
   if (ret < 0) {
     av_log(NULL, AV_LOG_ERROR, "Cannot create audio buffer sink\n");
