@@ -141,31 +141,14 @@ static int init_filters(const char *filters_descr) {
   }
 
   /* buffer audio sink: to terminate the filter chain. */
-  ret = avfilter_graph_create_filter(&buffersink_ctx, abuffersink, "out", NULL,
+  /* Note: For newer FFmpeg versions, options must be passed during filter
+   * creation, not via av_opt_set after creation. */
+  char sink_args[256];
+  snprintf(sink_args, sizeof(sink_args), "sample_fmts=s16:sample_rates=16000:ch_layouts=mono");
+  ret = avfilter_graph_create_filter(&buffersink_ctx, abuffersink, "out", sink_args,
                                      NULL, filter_graph);
   if (ret < 0) {
     av_log(NULL, AV_LOG_ERROR, "Cannot create audio buffer sink\n");
-    goto end;
-  }
-
-  ret = av_opt_set_int_list(buffersink_ctx, "sample_fmts", out_sample_fmts, -1,
-                            AV_OPT_SEARCH_CHILDREN);
-  if (ret < 0) {
-    av_log(NULL, AV_LOG_ERROR, "Cannot set output sample format\n");
-    goto end;
-  }
-
-  ret =
-      av_opt_set(buffersink_ctx, "ch_layouts", "mono", AV_OPT_SEARCH_CHILDREN);
-  if (ret < 0) {
-    av_log(NULL, AV_LOG_ERROR, "Cannot set output channel layout\n");
-    goto end;
-  }
-
-  ret = av_opt_set_int_list(buffersink_ctx, "sample_rates", out_sample_rates,
-                            -1, AV_OPT_SEARCH_CHILDREN);
-  if (ret < 0) {
-    av_log(NULL, AV_LOG_ERROR, "Cannot set output sample rate\n");
     goto end;
   }
 
