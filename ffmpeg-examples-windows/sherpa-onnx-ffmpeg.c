@@ -141,10 +141,10 @@ static int init_filters(const char *filters_descr) {
   }
 
   /* buffer audio sink: to terminate the filter chain. */
-  /* Note: For newer FFmpeg versions, options must be passed during filter
-   * creation, not via av_opt_set after creation. */
+  /* Note: For FFmpeg 7.0+, options must be passed during filter creation. */
   char sink_args[256];
-  snprintf(sink_args, sizeof(sink_args), "sample_fmts=s16:sample_rates=16000:ch_layouts=mono");
+  snprintf(sink_args, sizeof(sink_args),
+           "sample_formats=s16:sample_rates=16000:channel_layouts=mono");
   ret = avfilter_graph_create_filter(&buffersink_ctx, abuffersink, "out", sink_args,
                                      NULL, filter_graph);
   if (ret < 0) {
