@@ -1,0 +1,71 @@
+音频文件: D:/MyProjects/c_projects/sherpa-onnx/sherpa-onnx-ffmpeg-windows-demo/video2/video2_audio.wav
+
+时长: 113.000 秒
+处理时间: 3.484 秒
+RTF: 0.031
+
+=== 转录文本 ===
+ Lesson 2 Repetition drill Look at lesson 2 Look and listen Do not speak Look at number 1 Is this your pen? Yes it is Look at number 2 Is this your pencil? Yes it is Look at number 3 Is this your book?
+
+=== 详细结果 ===
+{
+  "lang": "",
+  "emotion": "",
+  "event": "",
+  "text": " Lesson 2 Repetition drill Look at lesson 2 Look and listen Do not speak Look at number 1 Is this your pen? Yes it is Look at number 2 Is this your pencil? Yes it is Look at number 3 Is this your book?",
+  "timestamps": [],
+  "durations": [],
+  "tokens": [
+    " Less",
+    "on",
+    " 2",
+    " Rep",
+    "etition",
+    " drill",
+    " Look",
+    " at",
+    " lesson",
+    " 2",
+    " Look",
+    " and",
+    " listen",
+    " Do",
+    " not",
+    " speak",
+    " Look",
+    " at",
+    " number",
+    " 1",
+    " Is",
+    " this",
+    " your",
+    " pen",
+    "?",
+    " Yes",
+    " it",
+    " is",
+    " Look",
+    " at",
+    " number",
+    " 2",
+    " Is",
+    " this",
+    " your",
+    " pencil",
+    "?",
+    " Yes",
+    " it",
+    " is",
+    " Look",
+    " at",
+    " number",
+    " 3",
+    " Is",
+    " this",
+    " your",
+    " book",
+    "?"
+  ],
+  "ys_log_probs": [],
+  "words": []
+}

@@ -1,0 +1,56 @@
+音频文件: D:/MyProjects/c_projects/sherpa-onnx/sherpa-onnx-ffmpeg-windows-demo/video2/video2_audio.wav
+
+时长: 113.000 秒
+处理时间: 9.808 秒
+RTF: 0.087
+
+=== 分段识别结果 ===
+[1.16s - 2.09s]: lesson 2.
+[2.85s - 4.14s]: repetition drill.
+[5.25s - 6.41s]: get lesson 2.
+[7.65s - 8.52s]: and listen.
+[9.13s - 10.16s]: do not speak.
+[11.14s - 12.68s]: look at number one.
+[13.57s - 15.02s]: is this your pen?
+[15.88s - 17.20s]: yes, it is.
+[18.15s - 19.72s]: look at number two.
+[20.77s - 22.48s]: is this your pencil?
+[23.21s - 24.56s]: yes, it is.
+[26.12s - 27.31s]: number 3.
+[27.85s - 29.52s]: is this your book?
+[30.28s - 31.82s]: yes, it is.
+[33.09s - 35.31s]: now you ask the questions.
+[35.94s - 36.46s]: ready.
+[38.28s - 39.40s]: number 1.
+[40.65s - 42.06s]: is this your pen?
+[42.92s - 44.49s]: yes, it is.
+[46.12s - 47.18s]: number 2
+[48.13s - 50.00s]: is this your pencil?
+[50.76s - 52.46s]: yes, it is.
+[53.89s - 55.31s]: look at number three.
+[56.13s - 57.77s]: is this your book?
+[58.50s - 60.01s]: yes, it is.
+[61.45s - 62.51s]: number 4
+[63.30s - 65.10s]: is this your watch?
+[66.05s - 67.50s]: yes, it is.
+[69.29s - 70.64s]: number 5.
+[71.59s - 73.26s]: is this your code?
+[74.12s - 75.50s]: yes, it is.
+[76.58s - 78.48s]: look at number 6.
+[79.37s - 81.04s]: is this your dress?
+[81.96s - 83.37s]: yes, it is.
+[84.93s - 86.19s]: number 7.
+[87.08s - 88.75s]: is this your skirt?
+[89.45s - 90.96s]: yes, it is.
+[92.01s - 93.87s]: look at number eight.
+[94.79s - 96.43s]: is this your shirt?
+[97.13s - 98.48s]: yes, it is.
+[99.43s - 101.36s]: look at number 9.
+[102.02s - 103.60s]: is this your car?
+[104.36s - 105.77s]: yes, it is.
+[107.21s - 108.36s]: number 10.
+[109.09s - 110.89s]: is this your house?
+[111.59s - 112.99s]: yes, it is.
+
+=== 完整文本 ===
+lesson 2. repetition drill. get lesson 2. and listen. do not speak. look at number one. is this your pen? yes, it is. look at number two. is this your pencil? yes, it is. number 3. is this your book? yes, it is. now you ask the questions. ready. number 1. is this your pen? yes, it is. number 2 is this your pencil? yes, it is. look at number three. is this your book? yes, it is. number 4 is this your watch? yes, it is. number 5. is this your code? yes, it is. look at number 6. is this your dress? yes, it is. number 7. is this your skirt? yes, it is. look at number eight. is this your shirt? yes, it is. look at number 9. is this your car? yes, it is. number 10. is this your house? yes, it is.
