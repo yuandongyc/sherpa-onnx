@@ -1,0 +1,19 @@
+{
+  "name": "video-converter",
+  "version": "1.0.0",
+  "description": "Video to audio converter module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "keywords": [
+    "video",
+    "audio",
+    "converter",
+    "ffmpeg"
+  ],
+  "author": "",
+  "license": "MIT"
+}

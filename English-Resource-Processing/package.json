@@ -1,0 +1,28 @@
+{
+  "name": "english-video-processing",
+  "version": "1.0.0",
+  "description": "Video processing tool for English audio transcription using Sherpa-ONNX",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node index.js",
+    "build:converter": "cd video-converter && npm run build"
+  },
+  "keywords": [
+    "video",
+    "audio",
+    "transcription",
+    "speech-recognition",
+    "sherpa-onnx",
+    "whisper"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "sherpa-onnx-node": "^1.12.23"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.6"
+  }
+}

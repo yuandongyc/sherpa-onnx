@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# External tools
+extern/
+
+# Input files
+input/
+
+# Output files
+output/
+
+# Backup files
+backup/
+
+# OS files
+.DS_Store
+Thumbs.db
