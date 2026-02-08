@@ -7,10 +7,15 @@ module.exports = {
 
   models: {
     whisper: {
-      dir: 'D:/MyProjects/c_projects/sherpa-onnx/all_models/sherpa-onnx-whisper-tiny.en',
-      encoder: 'tiny.en-encoder.int8.onnx',
-      decoder: 'tiny.en-decoder.int8.onnx',
-      tokens: 'tiny.en-tokens.txt',
+      dir: 'D:/MyProjects/c_projects/sherpa-onnx/all_models/sherpa-onnx-whisper-base.en',
+      encoder: 'base.en-encoder.int8.onnx',
+      decoder: 'base.en-decoder.int8.onnx',
+      tokens: 'base.en-tokens.txt',
+    },
+    senseVoice: {
+      dir: 'D:/MyProjects/c_projects/sherpa-onnx/all_models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17',
+      model: 'model.int8.onnx',
+      tokens: 'tokens.txt',
     },
     vad: {
       path: 'D:/MyProjects/c_projects/sherpa-onnx/all_models/silero_vad.onnx',
