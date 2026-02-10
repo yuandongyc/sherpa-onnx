@@ -36,11 +36,11 @@ LABEL maintainer="Your Name <your-email@example.com>"
 ENV POSTGRES_INITDB_ARGS="--enable-extensions=vector"
 
 # 从构建阶段复制pgvector文件
-COPY --from=builder /usr/local/lib/postgresql/*/extension/vector* /usr/local/lib/postgresql/*/extension/
-COPY --from=builder /usr/local/share/postgresql/extension/vector* /usr/local/share/postgresql/extension/
+COPY --from=builder /usr/lib/postgresql/15/lib/vector* /usr/lib/postgresql/15/lib/
+COPY --from=builder /usr/share/postgresql/15/extension/vector* /usr/share/postgresql/15/extension/
 
 # 确保容器启动时加载 pgvector 扩展（写入 postgresql.conf）
-RUN echo "shared_preload_libraries = 'vector'" >> /usr/share/postgresql/postgresql.conf.sample
+RUN echo "shared_preload_libraries = '\$libdir/vector'" >> /usr/share/postgresql/postgresql.conf.sample
 
 # 创建初始化脚本验证pgvector扩展
 RUN echo '#!/bin/bash\n\
