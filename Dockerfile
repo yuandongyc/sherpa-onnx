@@ -8,17 +8,23 @@ ENV PGVECTOR_VERSION=${PGVECTOR_VERSION}
 # 安装构建依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
+    wget \
+    ca-certificates \
     build-essential \
     postgresql-server-dev-15 \
     && rm -rf /var/lib/apt/lists/*
 
-# 克隆并编译pgvector
-RUN git clone --depth 1 --branch ${PGVECTOR_VERSION} https://github.com/pgvector/pgvector.git /tmp/pgvector 2>&1 || \
-    (echo "Git clone failed, retrying..." && sleep 5 && git clone --depth 1 --branch ${PGVECTOR_VERSION} https://github.com/pgvector/pgvector.git /tmp/pgvector) \
+# 下载并编译pgvector（使用release tarball更可靠）
+RUN PGVECTOR_VER=$(echo ${PGVECTOR_VERSION} | sed 's/^v//') \
+    && apt-get update && apt-get install -y --no-install-recommends wget ca-certificates \
+    && wget -O /tmp/pgvector.tar.gz "https://github.com/pgvector/pgvector/archive/refs/tags/${PGVECTOR_VERSION}.tar.gz" \
+    && tar -xzf /tmp/pgvector.tar.gz -C /tmp \
+    && mv /tmp/pgvector-${PGVECTOR_VER} /tmp/pgvector \
     && cd /tmp/pgvector \
     && make clean \
     && make \
-    && make install
+    && make install \
+    && rm -rf /tmp/pgvector.tar.gz /var/lib/apt/lists/*
 
 # 第二阶段：生产镜像
 FROM postgres:15
