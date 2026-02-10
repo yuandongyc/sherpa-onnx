@@ -2,7 +2,7 @@ name: Build PostgreSQL 15 + pgvector Docker Image
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
     paths:
       - 'Dockerfile'
       - '.github/workflows/a-build-pg15-vector.yaml'
