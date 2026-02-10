@@ -1,0 +1,83 @@
+name: Build PostgreSQL 15 + pgvector Docker Image
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Dockerfile'
+      - '.github/workflows/a-build-pg15-vector.yaml'
+  workflow_dispatch:
+
+jobs:
+  build-and-export:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Get Git info
+        id: git-info
+        run: |
+          echo "sha_short=$(echo ${{ github.sha }} | cut -c1-8)" >> $GITHUB_OUTPUT
+          echo "timestamp=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --build-arg PGVECTOR_VERSION=v0.5.1 \
+            --cache-from type=local,src=/tmp/.buildx-cache \
+            --cache-to type=local,dest=/tmp/.buildx-cache-new,mode=max \
+            -t pg15-vector:latest \
+            -t pg15-vector:${{ steps.git-info.outputs.sha_short }} \
+            -t pg15-vector:${{ steps.git-info.outputs.timestamp }} \
+            --progress=plain \
+            .
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+      - name: Test Docker image
+        run: |
+          docker run -d --name test-pgvector \
+            -e POSTGRES_PASSWORD=testpass \
+            -e POSTGRES_USER=testuser \
+            -e POSTGRES_DB=testdb \
+            pg15-vector:latest
+          
+          sleep 30
+          
+          docker ps | grep test-pgvector
+          
+          docker exec test-pgvector psql -U testuser -d testdb -c "CREATE EXTENSION vector;" || exit 1
+          docker exec test-pgvector psql -U testuser -d testdb -c "SELECT extname FROM pg_extension WHERE extname = 'vector';" || exit 1
+          
+          docker stop test-pgvector
+          docker rm test-pgvector
+
+      - name: Save image to tar file
+        run: |
+          mkdir -p ./docker-artifacts
+          docker save -o ./docker-artifacts/pg15-vector-${{ steps.git-info.outputs.sha_short }}.tar pg15-vector:latest
+
+      - name: Upload image to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pg15-vector-image-${{ steps.git-info.outputs.sha_short }}
+          path: ./docker-artifacts/pg15-vector-${{ steps.git-info.outputs.sha_short }}.tar
+          retention-days: 90
