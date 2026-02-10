@@ -48,12 +48,22 @@ jobs:
             -e POSTGRES_DB=testdb \
             pg15-vector:latest
           
+          # 等待PostgreSQL启动完成
           sleep 30
           
+          # 检查容器是否运行
           docker ps | grep test-pgvector
           
-          docker exec test-pgvector psql -U testuser -d testdb -c "CREATE EXTENSION vector;" || exit 1
-          docker exec test-pgvector psql -U testuser -d testdb -c "SELECT extname FROM pg_extension WHERE extname = 'vector';" || exit 1
+          # 等待初始化完成（pgvector扩展在初始化时自动创建）
+          sleep 10
+          
+          # 验证pgvector扩展已启用
+          docker exec test-pgvector psql -U testuser -d testdb -c "SELECT extname, extversion FROM pg_extension WHERE extname = 'vector';" || exit 1
+          
+          # 测试vector数据类型
+          docker exec test-pgvector psql -U testuser -d testdb -c "CREATE TABLE test_vectors (id serial PRIMARY KEY, embedding vector(3));" || exit 1
+          docker exec test-pgvector psql -U testuser -d testdb -c "INSERT INTO test_vectors (embedding) VALUES ('[1,2,3]'), ('[4,5,6]');" || exit 1
+          docker exec test-pgvector psql -U testuser -d testdb -c "SELECT * FROM test_vectors;" || exit 1
           
           docker stop test-pgvector
           docker rm test-pgvector

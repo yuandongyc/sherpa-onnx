@@ -42,17 +42,19 @@ COPY --from=builder /usr/share/postgresql/15/extension/vector* /usr/share/postgr
 # 确保容器启动时加载 pgvector 扩展（写入 postgresql.conf）
 RUN echo "shared_preload_libraries = '\$libdir/vector'" >> /usr/share/postgresql/postgresql.conf.sample
 
-# 创建初始化脚本验证pgvector扩展
+# 创建初始化脚本，在PostgreSQL首次启动时自动启用pgvector
 RUN echo '#!/bin/bash\n\
 set -e\n\
-echo "Checking pgvector extension..."\n\
-psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "CREATE EXTENSION IF NOT EXISTS vector;"\n\
-psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT extname, extversion FROM pg_extension WHERE extname = '\''vector'\'';"\n\
-exec docker-entrypoint.sh postgres\n'\
-> /usr/local/bin/init-pgvector.sh && chmod +x /usr/local/bin/init-pgvector.sh
+echo "Enabling pgvector extension..."\n\
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL\n\
+CREATE EXTENSION IF NOT EXISTS vector;\n\
+EOSQL\n\
+'\
+> /docker-entrypoint-initdb.d/10-enable-vector.sh && chmod +x /docker-entrypoint-initdb.d/10-enable-vector.sh
 
-# 设置入口点使用初始化脚本
-ENTRYPOINT ["/usr/local/bin/init-pgvector.sh"]
+# 使用PostgreSQL官方入口点
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["postgres"]
 
 # 添加健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
