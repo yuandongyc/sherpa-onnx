@@ -1,0 +1,15 @@
+{
+  "name": "audio-transcriber-zipformer-ctc",
+  "version": "1.0.0",
+  "description": "Audio transcription module using VAD v4 + Zipformer CTC",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

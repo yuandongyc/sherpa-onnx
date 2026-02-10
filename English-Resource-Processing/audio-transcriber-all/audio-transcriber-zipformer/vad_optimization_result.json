@@ -1,0 +1,78 @@
+{
+  "model": "Zipformer Transducer",
+  "optimizationDate": "2026-02-07",
+  "summary": "VAD参数调优使词准确率从91.40%提升到99.07%",
+  "improvement": "+7.67%",
+  "ranking": [
+    {
+      "rank": 1,
+      "name": "激进配置",
+      "avgWordAccuracy": "99.07%",
+      "avgCharSimilarity": "99.41%",
+      "params": {
+        "threshold": 0.2,
+        "minSpeechDuration": 0.15,
+        "minSilenceDuration": 0.2,
+        "maxSpeechDuration": 15
+      },
+      "results": {
+        "video2": { "wordAccuracy": "99.38%", "charSimilarity": "99.72%" },
+        "video4": { "wordAccuracy": "99.53%", "charSimilarity": "99.80%" },
+        "video6": { "wordAccuracy": "98.31%", "charSimilarity": "98.71%" }
+      }
+    },
+    {
+      "rank": 2,
+      "name": "优化配置",
+      "avgWordAccuracy": "96.43%",
+      "avgCharSimilarity": "97.54%",
+      "params": {
+        "threshold": 0.3,
+        "minSpeechDuration": 0.2,
+        "minSilenceDuration": 0.3,
+        "maxSpeechDuration": 10
+      },
+      "results": {
+        "video2": { "wordAccuracy": "94.38%", "charSimilarity": "96.14%" },
+        "video4": { "wordAccuracy": "97.63%", "charSimilarity": "98.36%" },
+        "video6": { "wordAccuracy": "97.29%", "charSimilarity": "98.13%" }
+      }
+    },
+    {
+      "rank": 3,
+      "name": "原始配置",
+      "avgWordAccuracy": "91.40%",
+      "avgCharSimilarity": "93.30%",
+      "params": {
+        "threshold": 0.5,
+        "minSpeechDuration": 0.25,
+        "minSilenceDuration": 0.5,
+        "maxSpeechDuration": 5
+      },
+      "results": {
+        "video2": { "wordAccuracy": "88.75%", "charSimilarity": "90.76%" },
+        "video4": { "wordAccuracy": "90.52%", "charSimilarity": "93.25%" },
+        "video6": { "wordAccuracy": "94.92%", "charSimilarity": "95.90%" }
+      }
+    }
+  ],
+  "recommendedConfig": {
+    "threshold": 0.2,
+    "minSpeechDuration": 0.15,
+    "minSilenceDuration": 0.2,
+    "maxSpeechDuration": 15,
+    "windowSize": 512,
+    "bufferSizeInSeconds": 60,
+    "explanation": {
+      "threshold": "降低阈值，更容易检测语音，减少漏检",
+      "minSpeechDuration": "减少最小语音时长，捕获更短的语音片段",
+      "minSilenceDuration": "减少静音间隔，更快切分语句",
+      "maxSpeechDuration": "增加最大语音时长，减少长句截断"
+    }
+  },
+  "notes": [
+    "激进配置适用于清晰的教材音频",
+    "如果噪音较多，建议使用优化配置(threshold=0.3)",
+    "maxSpeechDuration增加会占用更多内存"
+  ]
+}

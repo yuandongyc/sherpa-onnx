@@ -1,0 +1,15 @@
+{
+  "name": "audio-transcriber-moonshine-base-int8",
+  "version": "1.0.0",
+  "description": "Audio transcription module using VAD v4 + Moonshine (Base model int8 quantized)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

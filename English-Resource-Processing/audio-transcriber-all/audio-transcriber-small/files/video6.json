@@ -1,0 +1,365 @@
+{
+  "segments": [
+    {
+      "start": 1.51,
+      "end": 2.84,
+      "text": "Lesson 6"
+    },
+    {
+      "start": 3.24,
+      "end": 4.66,
+      "text": "Repetition Dwell"
+    },
+    {
+      "start": 5.23,
+      "end": 6.9,
+      "text": "Look at Lesson 6."
+    },
+    {
+      "start": 7.37,
+      "end": 8.95,
+      "text": "Look and listen."
+    },
+    {
+      "start": 9.32,
+      "end": 10.52,
+      "text": "Do not speak."
+    },
+    {
+      "start": 11.5,
+      "end": 13.18,
+      "text": "Look at number eight."
+    },
+    {
+      "start": 13.96,
+      "end": 15.1,
+      "text": "That's a Volvo."
+    },
+    {
+      "start": 16.07,
+      "end": 18.17,
+      "text": "Is it a Swedish car?"
+    },
+    {
+      "start": 18.47,
+      "end": 19.9,
+      "text": "or a French car."
+    },
+    {
+      "start": 20.91,
+      "end": 22.9,
+      "text": "It isn't a French car."
+    },
+    {
+      "start": 23.24,
+      "end": 25.08,
+      "text": "It's a Swedish car."
+    },
+    {
+      "start": 26.09,
+      "end": 27.77,
+      "text": "Look at number 9."
+    },
+    {
+      "start": 28.46,
+      "end": 29.75,
+      "text": "That's a Peugeot."
+    },
+    {
+      "start": 30.44,
+      "end": 32.28,
+      "text": "Is it a French car?"
+    },
+    {
+      "start": 32.59,
+      "end": 34.17,
+      "text": "or a Swedish car."
+    },
+    {
+      "start": 35.11,
+      "end": 37.21,
+      "text": "It isn't a Swedish car."
+    },
+    {
+      "start": 37.55,
+      "end": 39.13,
+      "text": "It's a French car."
+    },
+    {
+      "start": 40.2,
+      "end": 41.91,
+      "text": "Look at number 10."
+    },
+    {
+      "start": 42.57,
+      "end": 44.31,
+      "text": "That's a Mercedes."
+    },
+    {
+      "start": 44.84,
+      "end": 46.97,
+      "text": "Is it a German car?"
+    },
+    {
+      "start": 47.27,
+      "end": 49.37,
+      "text": "or a Japanese car."
+    },
+    {
+      "start": 50.12,
+      "end": 52.82,
+      "text": "It isn't a Japanese car."
+    },
+    {
+      "start": 53.13,
+      "end": 55.03,
+      "text": "It's a German car."
+    },
+    {
+      "start": 56.04,
+      "end": 59.93,
+      "text": "Now you answer the questions in the same way."
+    },
+    {
+      "start": 60.3,
+      "end": 60.79,
+      "text": "Ready?"
+    },
+    {
+      "start": 61.74,
+      "end": 63.42,
+      "text": "Look at number eight."
+    },
+    {
+      "start": 64.27,
+      "end": 65.5,
+      "text": "That's a Volvo."
+    },
+    {
+      "start": 66.03,
+      "end": 67.93,
+      "text": "Is it a Swedish car?"
+    },
+    {
+      "start": 68.2,
+      "end": 69.62,
+      "text": "or a French car."
+    },
+    {
+      "start": 70.51,
+      "end": 72.47,
+      "text": "It isn't a French car."
+    },
+    {
+      "start": 72.84,
+      "end": 74.52,
+      "text": "It's a Swedish car."
+    },
+    {
+      "start": 75.72,
+      "end": 77.53,
+      "text": "Look at number 9."
+    },
+    {
+      "start": 78.28,
+      "end": 79.64,
+      "text": "That's a Peugeot."
+    },
+    {
+      "start": 80.11,
+      "end": 81.85,
+      "text": "Is it a French car?"
+    },
+    {
+      "start": 82.03,
+      "end": 83.61,
+      "text": "or a Swedish car."
+    },
+    {
+      "start": 84.39,
+      "end": 86.36,
+      "text": "It isn't a Swedish car."
+    },
+    {
+      "start": 86.7,
+      "end": 88.28,
+      "text": "It's a French car."
+    },
+    {
+      "start": 89.48,
+      "end": 91.22,
+      "text": "Look at number 10."
+    },
+    {
+      "start": 91.91,
+      "end": 93.56,
+      "text": "That's a Mercedes."
+    },
+    {
+      "start": 94.06,
+      "end": 95.86,
+      "text": "Is it a German car?"
+    },
+    {
+      "start": 96.2,
+      "end": 98.01,
+      "text": "or a Japanese car."
+    },
+    {
+      "start": 98.89,
+      "end": 101.11,
+      "text": "It isn't a Japanese car."
+    },
+    {
+      "start": 101.45,
+      "end": 102.81,
+      "text": "It's a German car."
+    },
+    {
+      "start": 104.01,
+      "end": 106.1,
+      "text": "Look at number 11."
+    },
+    {
+      "start": 106.76,
+      "end": 108.38,
+      "text": "That's a Toyota."
+    },
+    {
+      "start": 108.97,
+      "end": 111.13,
+      "text": "Is it a Japanese car?"
+    },
+    {
+      "start": 111.5,
+      "end": 112.86,
+      "text": "or a German car."
+    },
+    {
+      "start": 113.96,
+      "end": 115.86,
+      "text": "It isn't a German car."
+    },
+    {
+      "start": 116.23,
+      "end": 117.94,
+      "text": "It's a Japanese car."
+    },
+    {
+      "start": 118.99,
+      "end": 120.92,
+      "text": "Look at number 12."
+    },
+    {
+      "start": 121.71,
+      "end": 123.16,
+      "text": "That's a day woo."
+    },
+    {
+      "start": 123.79,
+      "end": 125.69,
+      "text": "Is it a British car?"
+    },
+    {
+      "start": 126.09,
+      "end": 127.64,
+      "text": "or a Korean car."
+    },
+    {
+      "start": 128.43,
+      "end": 130.2,
+      "text": "It isn't a British car."
+    },
+    {
+      "start": 130.63,
+      "end": 132.12,
+      "text": "It's a Korean car."
+    },
+    {
+      "start": 133.13,
+      "end": 135.29,
+      "text": "Look at number 13."
+    },
+    {
+      "start": 135.91,
+      "end": 137.02,
+      "text": "That's a mini."
+    },
+    {
+      "start": 137.58,
+      "end": 139.64,
+      "text": "Is it an American car?"
+    },
+    {
+      "start": 140.11,
+      "end": 141.62,
+      "text": "or an English car."
+    },
+    {
+      "start": 142.51,
+      "end": 144.54,
+      "text": "It isn't an American car."
+    },
+    {
+      "start": 144.94,
+      "end": 146.49,
+      "text": "It's an English car."
+    },
+    {
+      "start": 147.53,
+      "end": 149.72,
+      "text": "Look at number 14."
+    },
+    {
+      "start": 150.35,
+      "end": 151.51,
+      "text": "That's a Ford."
+    },
+    {
+      "start": 152.27,
+      "end": 154.3,
+      "text": "Is it a Swedish car?"
+    },
+    {
+      "start": 154.6,
+      "end": 156.28,
+      "text": "or an American car."
+    },
+    {
+      "start": 157.16,
+      "end": 159.16,
+      "text": "It isn't a Swedish car."
+    },
+    {
+      "start": 159.53,
+      "end": 161.27,
+      "text": "It's an American car."
+    },
+    {
+      "start": 162.12,
+      "end": 164.22,
+      "text": "Look at number 15."
+    },
+    {
+      "start": 164.78,
+      "end": 165.98,
+      "text": "That's a fiat."
+    },
+    {
+      "start": 166.79,
+      "end": 168.92,
+      "text": "Is it an Italian car?"
+    },
+    {
+      "start": 169.42,
+      "end": 171.16,
+      "text": "or an American car."
+    },
+    {
+      "start": 171.79,
+      "end": 173.98,
+      "text": "It isn't an American car."
+    }
+  ],
+  "fullText": "Lesson 6 Repetition Dwell Look at Lesson 6. Look and listen. Do not speak. Look at number eight. That's a Volvo. Is it a Swedish car? or a French car. It isn't a French car. It's a Swedish car. Look at number 9. That's a Peugeot. Is it a French car? or a Swedish car. It isn't a Swedish car. It's a French car. Look at number 10. That's a Mercedes. Is it a German car? or a Japanese car. It isn't a Japanese car. It's a German car. Now you answer the questions in the same way. Ready? Look at number eight. That's a Volvo. Is it a Swedish car? or a French car. It isn't a French car. It's a Swedish car. Look at number 9. That's a Peugeot. Is it a French car? or a Swedish car. It isn't a Swedish car. It's a French car. Look at number 10. That's a Mercedes. Is it a German car? or a Japanese car. It isn't a Japanese car. It's a German car. Look at number 11. That's a Toyota. Is it a Japanese car? or a German car. It isn't a German car. It's a Japanese car. Look at number 12. That's a day woo. Is it a British car? or a Korean car. It isn't a British car. It's a Korean car. Look at number 13. That's a mini. Is it an American car? or an English car. It isn't an American car. It's an English car. Look at number 14. That's a Ford. Is it a Swedish car? or an American car. It isn't a Swedish car. It's an American car. Look at number 15. That's a fiat. Is it an Italian car? or an American car. It isn't an American car."
+}

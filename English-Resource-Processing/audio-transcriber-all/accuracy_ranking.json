@@ -1,0 +1,153 @@
+{
+  "analysisDate": "2026-02-07",
+  "totalModels": 8,
+  "testVideos": ["video2", "video4", "video6"],
+  "ranking": [
+    {
+      "rank": 1,
+      "model": "Zipformer Transducer",
+      "folder": "audio-transcriber-zipformer",
+      "avgWordAccuracy": "91.61%",
+      "avgCharSimilarity": "93.39%",
+      "videoResults": {
+        "video2": { "wordAccuracy": "89.38%", "charSimilarity": "91.03%" },
+        "video4": { "wordAccuracy": "90.52%", "charSimilarity": "93.25%" },
+        "video6": { "wordAccuracy": "94.92%", "charSimilarity": "95.90%" }
+      },
+      "pros": ["准确率最高", "长句表现好", "字符相似度最高"],
+      "cons": ["输出全大写", "无标点符号"]
+    },
+    {
+      "rank": 2,
+      "model": "Whisper Small",
+      "folder": "audio-transcriber-small",
+      "avgWordAccuracy": "89.37%",
+      "avgCharSimilarity": "90.19%",
+      "videoResults": {
+        "video2": { "wordAccuracy": "86.25%", "charSimilarity": "88.41%" },
+        "video4": { "wordAccuracy": "88.63%", "charSimilarity": "88.85%" },
+        "video6": { "wordAccuracy": "93.22%", "charSimilarity": "93.31%" }
+      },
+      "pros": ["保留标点符号", "正常大小写", "整体均衡"],
+      "cons": ["video4准确率稍低", "模型较大"]
+    },
+    {
+      "rank": 3,
+      "model": "Zipformer CTC",
+      "folder": "audio-transcriber-zipformer-ctc",
+      "avgWordAccuracy": "88.80%",
+      "avgCharSimilarity": "90.91%",
+      "videoResults": {
+        "video2": { "wordAccuracy": "85.63%", "charSimilarity": "89.66%" },
+        "video4": { "wordAccuracy": "89.57%", "charSimilarity": "90.49%" },
+        "video6": { "wordAccuracy": "91.19%", "charSimilarity": "92.59%" }
+      },
+      "pros": ["字符相似度高", "模型简单"],
+      "cons": ["全大写输出", "Lessoned错误", "无标点"]
+    },
+    {
+      "rank": 4,
+      "model": "Moonshine Base",
+      "folder": "audio-transcriber-moonshine-base-int8",
+      "avgWordAccuracy": "88.35%",
+      "avgCharSimilarity": "89.42%",
+      "videoResults": {
+        "video2": { "wordAccuracy": "83.75%", "charSimilarity": "84.97%" },
+        "video4": { "wordAccuracy": "89.10%", "charSimilarity": "91.00%" },
+        "video6": { "wordAccuracy": "92.20%", "charSimilarity": "92.30%" }
+      },
+      "pros": ["模型小巧", "速度快", "int8量化"],
+      "cons": ["look→get", "缺少Look at前缀"]
+    },
+    {
+      "rank": 5,
+      "model": "Moonshine Tiny",
+      "folder": "audio-transcriber-moonshine-tiny-int8",
+      "avgWordAccuracy": "88.35%",
+      "avgCharSimilarity": "89.42%",
+      "videoResults": {
+        "video2": { "wordAccuracy": "83.75%", "charSimilarity": "84.97%" },
+        "video4": { "wordAccuracy": "89.10%", "charSimilarity": "91.00%" },
+        "video6": { "wordAccuracy": "92.20%", "charSimilarity": "92.30%" }
+      },
+      "pros": ["模型最小", "速度最快", "适合移动端"],
+      "cons": ["同Moonshine Base", "专有名词错误"]
+    },
+    {
+      "rank": 6,
+      "model": "Whisper Tiny v4",
+      "folder": "audio-transcriber-tiny-v4",
+      "avgWordAccuracy": "87.76%",
+      "avgCharSimilarity": "88.90%",
+      "videoResults": {
+        "video2": { "wordAccuracy": "83.75%", "charSimilarity": "86.34%" },
+        "video4": { "wordAccuracy": "87.68%", "charSimilarity": "88.14%" },
+        "video6": { "wordAccuracy": "91.86%", "charSimilarity": "92.23%" }
+      },
+      "pros": ["模型小", "速度快", "性价比高"],
+      "cons": ["coat→code", "准确率中等"]
+    },
+    {
+      "rank": 7,
+      "model": "Whisper Tiny",
+      "folder": "audio-transcriber-tiny",
+      "avgWordAccuracy": "87.76%",
+      "avgCharSimilarity": "88.90%",
+      "videoResults": {
+        "video2": { "wordAccuracy": "83.75%", "charSimilarity": "86.34%" },
+        "video4": { "wordAccuracy": "87.68%", "charSimilarity": "88.14%" },
+        "video6": { "wordAccuracy": "91.86%", "charSimilarity": "92.23%" }
+      },
+      "pros": ["模型小", "速度快"],
+      "cons": ["同Whisper Tiny v4"]
+    },
+    {
+      "rank": 8,
+      "model": "Whisper Base",
+      "folder": "audio-transcriber-base",
+      "avgWordAccuracy": "87.13%",
+      "avgCharSimilarity": "87.72%",
+      "videoResults": {
+        "video2": { "wordAccuracy": "83.75%", "charSimilarity": "84.69%" },
+        "video4": { "wordAccuracy": "85.78%", "charSimilarity": "86.30%" },
+        "video6": { "wordAccuracy": "91.86%", "charSimilarity": "92.16%" }
+      },
+      "pros": ["保留标点", "正常大小写"],
+      "cons": ["准确率最低", "模型较大但效果一般"]
+    }
+  ],
+  "recommendations": {
+    "production": "Zipformer Transducer + 大小写后处理",
+    "balanced": "Whisper Small (保留标点)",
+    "fast": "Moonshine Tiny (速度优先)",
+    "costEffective": "Whisper Tiny v4"
+  },
+  "postProcessingRules": [
+    { "from": "code", "to": "coat" },
+    { "from": "get", "to": "look" },
+    { "from": "lessened", "to": "lesson" },
+    { "from": "vol", "to": "volvo" },
+    { "from": "vovel", "to": "volvo" },
+    { "from": "pejot", "to": "peugeot" },
+    { "from": "fren", "to": "french" },
+    { "from": "day woo", "to": "daewoo" },
+    { "from": "it' this", "to": "is this" },
+    { "from": "it's this", "to": "is this" }
+  ],
+  "vadOptimization": {
+    "current": {
+      "threshold": 0.5,
+      "minSpeechDuration": 0.25,
+      "minSilenceDuration": 0.5,
+      "maxSpeechDuration": 5,
+      "windowSize": 512
+    },
+    "recommended": {
+      "threshold": 0.3,
+      "minSpeechDuration": 0.2,
+      "minSilenceDuration": 0.3,
+      "maxSpeechDuration": 10,
+      "windowSize": 512
+    }
+  }
+}

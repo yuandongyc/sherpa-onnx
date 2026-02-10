@@ -1,0 +1,251 @@
+1
+00:00:01,502 --> 00:00:02,854
+Lesson six.
+
+2
+00:00:03,262 --> 00:00:04,646
+Repetition dwell.
+
+3
+00:00:05,182 --> 00:00:06,886
+Look at lesson six.
+
+4
+00:00:07,358 --> 00:00:08,934
+Look and listen.
+
+5
+00:00:09,310 --> 00:00:10,534
+Do not speak.
+
+6
+00:00:11,486 --> 00:00:13,190
+Look at number eight.
+
+7
+00:00:13,918 --> 00:00:15,078
+That's a vol
+
+8
+00:00:16,030 --> 00:00:18,182
+Is it a Swedish car?
+
+9
+00:00:18,430 --> 00:00:19,910
+Or a French car.
+
+10
+00:00:20,894 --> 00:00:25,126
+It isn't a French car, it's a Swedish car.
+
+11
+00:00:26,046 --> 00:00:27,782
+Look at number nine.
+
+12
+00:00:28,414 --> 00:00:29,734
+That's a Peugeot.
+
+13
+00:00:30,430 --> 00:00:32,326
+Is it a French car?
+
+14
+00:00:32,542 --> 00:00:34,182
+Or a Swedish car.
+
+15
+00:00:35,070 --> 00:00:39,206
+It isn't a Swedish car, it's a French car.
+
+16
+00:00:40,158 --> 00:00:41,926
+Look at number ten.
+
+17
+00:00:42,494 --> 00:00:44,326
+That's a Mercedes.
+
+18
+00:00:44,830 --> 00:00:46,982
+Is it a German car?
+
+19
+00:00:47,262 --> 00:00:49,382
+Or a Japanese car.
+
+20
+00:00:50,110 --> 00:00:52,870
+It isn't a Japanese car.
+
+21
+00:00:53,118 --> 00:00:55,046
+It's a German car.
+
+22
+00:00:56,030 --> 00:00:59,942
+Now you answer the questions in the same way
+
+23
+00:01:00,222 --> 00:01:00,806
+Ready?
+
+24
+00:01:01,726 --> 00:01:03,462
+Look at number eight.
+
+25
+00:01:04,190 --> 00:01:05,510
+That's a Vovel.
+
+26
+00:01:06,014 --> 00:01:07,942
+Is it a Swedish car?
+
+27
+00:01:08,190 --> 00:01:09,638
+Or a French car.
+
+28
+00:01:10,494 --> 00:01:14,566
+It isn't a French car, it's a Swedish car.
+
+29
+00:01:15,678 --> 00:01:17,510
+Look at number nine.
+
+30
+00:01:18,206 --> 00:01:23,622
+That's a pejot. Is it a Fren car or a Swedish car?
+
+31
+00:01:24,382 --> 00:01:28,326
+It isn't a Swedish car, it's a French car.
+
+32
+00:01:29,438 --> 00:01:31,270
+Look at number ten.
+
+33
+00:01:31,902 --> 00:01:33,606
+That's a Mercedes.
+
+34
+00:01:34,078 --> 00:01:35,878
+Is it a German car?
+
+35
+00:01:36,190 --> 00:01:38,054
+Or a Japanese car.
+
+36
+00:01:38,878 --> 00:01:41,126
+It isn't a Japanese car, but
+
+37
+00:01:41,438 --> 00:01:42,822
+It's a German car.
+
+38
+00:01:43,998 --> 00:01:46,086
+Look at number eleven.
+
+39
+00:01:46,718 --> 00:01:48,390
+That's a Toyota.
+
+40
+00:01:48,958 --> 00:01:51,174
+Is it a Japanese car?
+
+41
+00:01:51,486 --> 00:01:52,902
+Or a German car.
+
+42
+00:01:53,918 --> 00:01:57,990
+It isn't a German car. It's a Japanese car.
+
+43
+00:01:58,974 --> 00:02:00,966
+Look at number twelve.
+
+44
+00:02:01,630 --> 00:02:03,174
+That's a day woo.
+
+45
+00:02:03,774 --> 00:02:05,702
+Is it a British car?
+
+46
+00:02:06,078 --> 00:02:07,654
+Or a Korean car.
+
+47
+00:02:08,414 --> 00:02:12,166
+It isn't a British car, it's a Korean car.
+
+48
+00:02:13,086 --> 00:02:15,302
+Look at number thirteen.
+
+49
+00:02:15,870 --> 00:02:16,998
+That's a mini
+
+50
+00:02:17,534 --> 00:02:19,654
+Is it an American car?
+
+51
+00:02:20,094 --> 00:02:21,670
+Or an English car.
+
+52
+00:02:22,462 --> 00:02:26,566
+It isn't an American car. It's an English car.
+
+53
+00:02:27,486 --> 00:02:29,734
+Look at number fourteen.
+
+54
+00:02:30,334 --> 00:02:31,558
+That's a Ford.
+
+55
+00:02:32,254 --> 00:02:34,342
+Is it a Swedish car?
+
+56
+00:02:34,590 --> 00:02:36,294
+Or an American car.
+
+57
+00:02:37,150 --> 00:02:39,174
+It isn't a Swedish car.
+
+58
+00:02:39,518 --> 00:02:41,318
+It's an American car.
+
+59
+00:02:42,078 --> 00:02:44,198
+Look at number 15.
+
+60
+00:02:44,734 --> 00:02:46,022
+That's a fiat.
+
+61
+00:02:46,782 --> 00:02:48,966
+Is it an Italian car?
+
+62
+00:02:49,406 --> 00:02:51,174
+Or an American car.
+
+63
+00:02:51,774 --> 00:02:53,958
+It isn't an American car.
