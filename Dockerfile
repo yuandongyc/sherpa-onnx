@@ -1,5 +1,5 @@
 # 第一阶段：构建pgvector
-FROM postgres:15 as builder
+FROM postgres:15 AS builder
 
 # 支持动态传入pgvector版本参数
 ARG PGVECTOR_VERSION=v0.5.1
@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # 克隆并编译pgvector
-RUN git clone --branch ${PGVECTOR_VERSION} https://github.com/pgvector/pgvector.git /tmp/pgvector \
+RUN git clone --depth 1 --branch ${PGVECTOR_VERSION} https://github.com/pgvector/pgvector.git /tmp/pgvector 2>&1 || \
+    (echo "Git clone failed, retrying..." && sleep 5 && git clone --depth 1 --branch ${PGVECTOR_VERSION} https://github.com/pgvector/pgvector.git /tmp/pgvector) \
     && cd /tmp/pgvector \
     && make clean \
     && make \
