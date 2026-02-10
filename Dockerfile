@@ -32,8 +32,8 @@ FROM postgres:15
 # 维护者信息（可选）
 LABEL maintainer="Your Name <your-email@example.com>"
 
-# 设置环境变量，确保 pgvector 扩展默认启用
-ENV POSTGRES_INITDB_ARGS="--enable-extensions=vector"
+# 设置环境变量
+ENV PGVECTOR_VERSION=${PGVECTOR_VERSION}
 
 # 从构建阶段复制pgvector文件
 COPY --from=builder /usr/lib/postgresql/15/lib/vector* /usr/lib/postgresql/15/lib/
